@@ -1,0 +1,111 @@
+#set($treeMyid='')
+#set($treeMyid_getMethod='')
+#set($treeMyid_setMethod='')
+#set($treeMypid='')
+#set($treeMyid_getMethod='')
+#set($treeMyid_setMethod='')
+#set($treeMyname='')
+#set($treeMyname_getMethod='')
+#set($treeMyname_setMethod='')
+#foreach($field in ${fields})
+    #if(${field.tree}=='id')
+        #set($treeMyid="${field.c_name}")
+        #set($treeMyid_getMethod="${field.c_method_get}")
+        #set($treeMyid_setMethod="${field.c_method_set}")
+    #elseif(${field.tree}=='pid')
+        #set($treeMypid="${field.c_name}")
+        #set($treeMypid_getMethod="${field.c_method_get}")
+        #set($treeMypid_setMethod="${field.c_method_set}")
+    #elseif(${field.tree}=='name')
+        #set($treeMyname="${field.c_name}")
+        #set($treeMyname_getMethod="${field.c_method_get}")
+        #set($treeMyname_setMethod="${field.c_method_set}")
+    #end
+#end
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<!--后台UI组件Start-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>添加${bean.bean_bz}</title>
+        <script type="text/javascript" src="${path_home}/cc/bean/js/bean_A.js"></script>
+        <%@include file="/WEB-INF/jspf/easyuiLocal.jspf"%>
+        <%@include file="/WEB-INF/jspf/artDialog.jspf"%>
+        <%@include file="/WEB-INF/jspf/ztree.jspf"%>
+        <%@include file="/WEB-INF/jspf/GG.jspf"%>
+        <script>
+            $(function () {
+                toCreateTree("divID_Tree_menu_${bean.name_bean}", "${treeMyid}", "${treeMypid}", "${treeMyname}", "${bean.request_url}${bean.request_url_select}/json.jw", true, onclickdo${name_bean}, true);
+            });
+            function onclickdo${name_bean}(event, id, treeNode) {
+                $("#${treeMypid}").val(treeNode.${treeMyid})
+                $("#${treeMypid}_mc").val(treeNode.${treeMyname})
+            }
+            function submitForm() {
+                $('#${bean.name_bean}FormID').form('submit', {
+                    onSubmit: function () {
+                        var vcheck=$(this).form('enableValidation').form('validate');
+                        if(vcheck){
+                            var data={}
+#foreach($field in ${fields})                            
+                            data.${field.c_name}=$("#${field.c_name}").val()
+#end                            
+                             easyuiAjax("${bean.request_url}${bean.request_url_add}.jw",data,"请确认保存操作", function () {
+                                $.fn.zTree.getZTreeObj("divID_Tree_menu_${bean.name_bean}").reAsyncChildNodes(null, "refresh");
+                            });
+                        }
+                        return false;
+                    }
+                });
+            }
+            function clearForm() {
+                $('#${bean.name_bean}FormID').form('clear');
+            }
+        </script>
+    </head>
+    <body class="easyui-layout">
+        <div data-options="region:'west',split:true,title:''" style="width:250px;padding:10px;">
+            <div id="divID_Tree_menu_${bean.name_bean}" class="ztree">bean</div>
+        </div>
+        <div data-options="region:'center'" id='centerMain'>
+<div style="margin:8px">
+                <a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()">清空</a>
+                <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitForm()">保存</a>
+            </div>
+            <div class="easyui-panel"fit="true">
+                <div style="padding:30px">
+                    <form id="${bean.name_bean}FormID" class="easyui-form" method="post" data-options="novalidate:true">
+                    <input type="hidden" id="${treeMypid}" name="${treeMypid}" value="">
+                        <table cellpadding="5">
+                            <tr>
+                                <td>上级:</td>
+                                <td><input type="text" id="${treeMypid}_mc" name="${treeMypid}_mc"  disabled="true" ></td>
+                            </tr>
+#set($mustcheck='')
+#foreach($field in $fields)
+#if($field.tree!='id'&&$field.tree!='pid'&&$field.v_check!='')
+#if($field.v_check!='')##开始：是否执行查检
+ #set($mustcheck="required:${field.v_check}")
+#else
+  #set($mustcheck="required:false")
+#end##结束：是否执行查检
+#if($field.c_dateformat!='')##日期或时间
+                            <tr>
+                                <td>${field.c_remarks}:</td>
+                                <td><input class="easyui-datebox" type="text" id="${field.c_name}" name="${field.c_name}" data-options="${mustcheck},formatter:easyuidateformatter,parser:easyuidateparser"></input></td>
+                            </tr>
+#else##其他的属性
+                            <tr>
+                                <td>${field.c_remarks}:</td>
+                                <td><input class="easyui-textbox" type="text" id="${field.c_name}" name="${field.c_name}" data-options="${mustcheck}"></input></td>
+                            </tr>
+#end
+#end
+#end
+                        </table>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

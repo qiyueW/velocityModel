@@ -1,0 +1,30 @@
+CREATE TABLE IF NOT EXISTS `${bean.name_bean}`(
+#set($ttype='')
+#set($tisnull='')
+#set($count=1)
+#foreach($field in ${fields})
+    #if(${field.t_length}!='')
+        #set($ttype="${field.t_type}(${field.t_length})")
+    #else
+        #set($ttype="${field.t_type}")
+    #end
+    #if($count==1)
+     #set($count=2)
+    `${field.t_name}` $ttype ${field.t_isnull}  COMMENT '${field.t_remarks}'
+    #else
+    ,`${field.t_name}` $ttype ${field.t_isnull} COMMENT '${field.t_remarks}'
+    #end
+#end
+
+#foreach($field in ${fields})
+ #if(${field.t_index}=='PRIMARY KEY')
+    ,PRIMARY KEY (`${field.t_name}`)
+ #elseif(${field.t_index}!='')
+   ,${field.t_index} `${field.t_name}` (`${field.t_name}`)
+ #end
+#end
+)
+COMMENT='${bean.bean_bz}'
+COLLATE='utf8mb4_general_ci'
+ENGINE=InnoDB
+;

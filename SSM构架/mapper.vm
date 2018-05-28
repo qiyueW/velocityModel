@@ -1,0 +1,58 @@
+package ${bean.package_dao};
+
+import ${bean.package_bean}.${bean.name_bean};
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+#set($myBeanName_param="$bean_mc.substring(0,1).toLowerCase()$bean_mc.substring(1,$bean_mc.length())")
+import java.util.List;
+
+@Mapper
+public interface ${bean.name_dao} {
+    /**
+     * ${bean.bean_bz}:添加一条记录
+     * @param spuProduct ${bean.name_bean}实例
+     */
+    void save(${bean.name_bean} ${myBeanName_param});
+
+    /**
+     * ${bean.name_bean}：获取一条记录(根据ID)
+     *
+     * @param id ${bean.name_bean}关联表主键的值
+     * @return ${bean.name_bean}实例
+     */
+    SpuProduct get(Long id);
+
+    /**
+     * ${bean.name_bean}：修改基础信息
+     *  @param ${myBeanName_param} ${bean.name_bean}实例
+     */
+    void updateBase(${bean.name_bean} ${myBeanName_param});
+
+    /**
+     * ${bean.name_bean}：修改状态
+     *  @param ${myBeanName_param} ${bean.name_bean}实例
+     */
+    void updateStatus(${bean.name_bean} ${myBeanName_param});
+
+    /**
+     * ${bean.name_bean}：修改一条记录
+     * @param id  ${bean.name_bean}关联表主键的值
+     */
+    void delete(@Param("id") Long id);
+
+    /**
+     * ${bean.name_bean}：获取列表（分页）
+     * @param start 起始条数
+     * @param size 总条数
+     * @return
+     */
+    List findByService(@Param("start") int start,
+                       @Param("size") int size);
+
+    /**
+     * 获取总数
+     * @return
+     */
+    long getCountByService();
+
+}

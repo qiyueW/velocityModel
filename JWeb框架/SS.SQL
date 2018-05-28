@@ -1,0 +1,2 @@
+INSERT INTO
+    (id,serial_no,code,approval_no,name,specification,category_id,length,width,height,is_fragile,weight,brand,manufacturer,unit,composition,description,introduction,indications,dosage_administration,guidance_price,contraindications,precautions,adverse_reactions,inyeraction,storage,shelf_life,for_people,is_prescription,require_id_card,cover,photos,create_time,status,create_time,modify_time)

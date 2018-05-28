@@ -1,0 +1,122 @@
+#set($D='$')##表示美元协定整个项目都表示这个意思
+#set($NyJSFilePath_Add="${D}{path_home}/${bean.path_js_user}/${bean.js_name_add}.js")##添加页面 引用的js文件路径-项目模板下通用
+#set($NyJSFilePath_Edit="${D}{path_home}/${bean.path_js_user}/${bean.js_name_update}.js")##修改页面 引用的js文件路径-项目模板下通用
+#set($NyJSFilePath_List="${D}{path_home}/${bean.path_js_user}/${bean.js_name_list}.js")##列表页面 引用的js文件路径-项目模板下通用
+#set($MyStyle='')##是否启用了单据状态
+#set($MyStyleName='')##单据状态名
+#set($MyStyle_getMethod='')##单据状态-get方法
+#set($MyStyle_setMethod='')##单据状态-set方法
+#set($MyTreeMenuID="divID_Tree_menu_${bean.name_bean}")##放树菜单的div域
+#set($MyFormID="${bean.name_bean}FormID")##表单的ID
+#set($treeMyid='')
+#set($treeMyid_getMethod='')
+#set($treeMyid_setMethod='')
+#set($treeMypid='')
+#set($treeMyid_getMethod='')
+#set($treeMyid_setMethod='')
+#set($treeMyname='')
+#set($treeMyname_getMethod='')
+#set($treeMyname_setMethod='')
+#set($MyFileOrImg='')
+#foreach($field in ${fields})
+#if(${field.tree}=='id')
+#set($treeMyid="${field.c_name}")
+#set($treeMyid_getMethod="${field.c_method_get}")
+#set($treeMyid_setMethod="${field.c_method_set}")
+#elseif(${field.tree}=='pid')
+#set($treeMypid="${field.c_name}")
+#set($treeMypid_getMethod="${field.c_method_get}")
+#set($treeMypid_setMethod="${field.c_method_set}")
+#elseif(${field.tree}=='name')
+#set($treeMyname="${field.c_name}")
+#set($treeMyname_getMethod="${field.c_method_get}")
+#set($treeMyname_setMethod="${field.c_method_set}")
+#elseif(${field.style}=='true')##是否启用了单据状态
+#set($MyStyle='true')##是
+#set($MyStyleName="${field.c_name}")
+#set($MyStyle_getMethod="${field.c_method_get}")
+#set($MyStyle_setMethod="${field.c_method_set}")
+#elseif($field.h_type=='img'||$field.h_type=='file'||$field.h_type=='imgs'||$field.h_type=='files')##是否有文件上传
+#set($MyFileOrImg='true')##是        
+#end
+#end
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<!--后台UI组件Start-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>明细-${bean.bean_bz}</title>
+        <%@include file="/WEB-INF/jspf/easyuiLocal.jspf"%>
+        <%@include file="/WEB-INF/jspf/artDialog.jspf"%>
+        <%@include file="/WEB-INF/jspf/ztree.jspf"%>
+        <%@include file="/WEB-INF/jspf/GG.jspf"%>
+        <script>
+            function closeMySelf() {
+                window.parent.closethisWindowSeeOne();//调取aa函数
+            }
+        </script>
+    </head>
+<body class="easyui-layout">
+        <div data-options="region:'center'">
+            <div style="margin:8px">
+                <a href="javascript:void(0)" class="easyui-linkbutton" onclick="closeMySelf()">关闭</a>
+            </div>
+            <div class="easyui-panel"fit="true">
+#foreach($field in $fields)
+#if($field.h_hidden=='true'||$field.style=='true')##是否主键类的字段
+            <input type="hidden" id="${field.c_name}" name="${field.c_name}" value="$D{${bean.name_bean}.${field.c_name}}">
+#end
+#end
+            <table cellpadding="5">
+                <tr>
+                    <td>上级:</td>
+                    <td><input type="text" id="${treeMypid}_mc" name="${treeMypid}_mc" value="$D{fl_P.${treeMyname}}" disabled="true" ></td>
+                </tr>
+#set($mustcheck='')
+#foreach($field in $fields)
+#if($field.tree!='id'&&$field.tree!='pid'&&$field.v_check!=''&&$field.h_hidden!='true'&&$field.style!='true')
+#if($field.v_check!='')##开始：是否执行查检
+#set($mustcheck="required:${field.v_check}")
+#else
+#set($mustcheck="required:false")
+#end##结束：是否执行查检
+#if($field.h_hidden!='true')## 非主键类的
+#if($field.c_dateformat!='')##日期或时间
+                <tr>
+                    <td>${field.c_remarks}:</td>
+                    <td><input class="easyui-datebox" type="text" value="$D{${bean.name_bean}.${field.c_name}}"  disabled="true" name="${field.c_name}" data-options="formatter:easyuidateformatter,parser:easyuidateparser"/></td>
+                </tr>
+#elseif($field.h_type=='textarea')##文本域类的
+                <tr>
+                    <td>${field.c_remarks}:</td>
+                    <td><textarea rows=5  disabled="true">$D{${bean.name_bean}.${field.c_name}}</textarea></td>
+                </tr>
+#elseif($field.h_type=='img')##图片类
+                <tr>
+                    <td>${field.c_remarks}:</td>
+                    <td>
+                    <a href="${path_home}/$D{${bean.name_bean}.${field.c_name}}" target="_bland"><img src="${path_home}/$D{${bean.name_bean}.${field.c_name}}" style="max-width:300px;"/></a>
+                    </td>
+                </tr>
+#elseif($field.h_type=='file')##文件类
+                <tr>
+                    <td>${field.c_remarks}:</td>
+                    <td>
+                    <a href="${path_home}/$D{${bean.name_bean}.${field.c_name}}" target="_bland">下载</a>
+                    </td>
+                </tr>                
+#else
+                <tr>
+                    <td>${field.c_remarks}:</td>
+                    <td>$D{${bean.name_bean}.${field.c_name}}</td>
+                </tr>
+#end
+#end
+#end
+#end
+            </table>
+        </div>
+        </div>
+    </body>
+</html>
+

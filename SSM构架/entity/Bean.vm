@@ -1,0 +1,52 @@
+#set($c_myCreator='')##创建者主键
+#set($c_myCreatorName='')##创建者名称
+#set($c_myCreateTime='')##创建时间
+#set($c_myModifier='')##修改人主键
+#set($c_myModifierName='')##修改人名称
+#set($c_myMdifyTime='')##修改时间
+##配置变量结束
+package ${bean.package_bean};
+
+import com.alibaba.fastjson.annotation.JSONField;
+#foreach($field in $fields)
+#if($field.c_type=='Date')
+import java.util.Date;
+#break
+#end
+#end
+
+public class ${bean.name_bean} extends AbstractEntity{
+
+#foreach($field in $fields)
+#if($field.c_name!='creator'&&$field.c_name!='creatorName'&&$field.c_name!='createTime'&&$field.c_name!='modifier'&&$field.c_name!='modifierName'&&$field.c_name!='modifyTime')
+    /**
+     * $field.c_remarks 
+     */
+	@JSONField(name = "$field.t_name")
+    $field.c_scope  $field.c_type $field.c_name ;
+
+#end
+#end
+
+#foreach($field in $fields)
+#if($field.c_name!='creator'&&$field.c_name!='creatorName'&&$field.c_name!='createTime'&&$field.c_name!='modifier'&&$field.c_name!='modifierName'&&$field.c_name!='modifyTime')
+    /**
+     * 设置 $field.c_remarks
+     *
+     * @param $field.c_name $field.c_type
+     */
+    public void ${field.c_method_set}(${field.c_type} ${field.c_name}) {
+        this.${field.c_name}=${field.c_name};
+    }
+
+    /**
+     * 取得 $field.c_remarks
+     *
+     * @return $field.c_type
+     */
+    public ${field.c_type} ${field.c_method_get}() {
+        return this.${field.c_name};
+    }
+#end
+#end
+}

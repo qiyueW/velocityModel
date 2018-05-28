@@ -1,0 +1,112 @@
+#set($D='$')##表示美元协定整个项目都表示这个意思
+#set($NyJSFilePath_Add="${D}{path_home}/${bean.path_js_user}/${bean.js_name_add}.js")##添加页面 引用的js文件路径-项目模板下通用
+#set($NyJSFilePath_Edit="${D}{path_home}/${bean.path_js_user}/${bean.js_name_update}.js")##修改页面 引用的js文件路径-项目模板下通用
+#set($NyJSFilePath_List="${D}{path_home}/${bean.path_js_user}/${bean.js_name_list}.js")##列表页面 引用的js文件路径-项目模板下通用
+#set($MyTreeMenuID="divID_Tree_menu_${bean.name_bean}")##放树菜单的div域
+#set($MyFormID="${bean.name_bean}FormID")##表单的ID
+#set($MyStyle='')##是否启用了单据状态
+#set($treeMyid='')
+#set($treeMyid_getMethod='')
+#set($treeMyid_setMethod='')
+#set($treeMypid='')
+#set($treeMyid_getMethod='')
+#set($treeMyid_setMethod='')
+#set($treeMyname='')
+#set($treeMyname_getMethod='')
+#set($treeMyname_setMethod='')
+#foreach($field in ${fields})
+    #if(${field.tree}=='id')
+        #set($treeMyid="${field.c_name}")##找到树的主键
+        #set($treeMyid_getMethod="${field.c_method_get}")
+        #set($treeMyid_setMethod="${field.c_method_set}")
+    #elseif(${field.tree}=='pid')##找到树的父键
+        #set($treeMypid="${field.c_name}")
+        #set($treeMypid_getMethod="${field.c_method_get}")
+        #set($treeMypid_setMethod="${field.c_method_set}")
+    #elseif(${field.tree}=='name')##找到树的名称
+        #set($treeMyname="${field.c_name}")
+        #set($treeMyname_getMethod="${field.c_method_get}")
+        #set($treeMyname_setMethod="${field.c_method_set}")
+    #elseif(${field.style}=='true')##是否启用了单据状态
+        #set($MyStyle='true')##是
+    #end
+#end
+
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<!--后台UI组件Start-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>维护${bean.bean_bz}</title>
+        <script type="text/javascript" src="${NyJSFilePath_List}"></script>
+        <%@include file="/WEB-INF/jspf/easyuiLocal.jspf"%>
+        <%@include file="/WEB-INF/jspf/artDialog.jspf"%>
+        <%@include file="/WEB-INF/jspf/ztree.jspf"%>
+        <%@include file="/WEB-INF/jspf/GG.jspf"%>
+        <script>
+            $D(function (){
+#foreach($field in $fields)
+#if($field.h_hidden=='true')
+                $D('#dg').datagrid('hideColumn', '${field.c_name}');
+#end
+#end
+            });
+        </script>
+    </head>
+    <body class="easyui-layout">
+        <table id="dg" class="easyui-treegrid" fit='true'
+               url="$D{path_home}${bean.request_url}${bean.request_url_select}/grid.jw"
+               rownumbers="true" showFooter="true" toolbar="#tb"idField="${treeMyid}" treeField="${treeMyname}" >
+            <thead>
+                <tr>
+                    <th data-options="field:'ck',checkbox:true"></th>##复选框。一定有。放在前面。                
+#foreach($field in $fields)
+    #if($field.h_hidden=='true')## 主键类的 隐藏。所以不需要设置长度
+                    <th data-options="field:'${field.c_name}'">${field.c_remarks}</th>
+    #elseif(${field.tree}=='name')##找到树的名称。要展示树结构，所以长度要长些。
+                    <th data-options="field:'${field.c_name}',width:360"><div>${field.c_remarks}</div></th>
+    #elseif($field.c_dateformat!='')##日期或时间
+                    <th data-options="field:'${field.c_name}',width:130"><div>${field.c_remarks}</div></th>
+    #elseif($field.style=='true')##启用了单据状态
+                    <th data-options="field:'${field.c_name}',width:60,formatter:f_common_style"><div>${field.c_remarks}</div></th>
+    #elseif($field.h_type=='img')##图片
+                    <th data-options="field:'${field.c_name}',width:60,formatter:f_grid_img"><div>${field.c_remarks}</div></th>
+    #elseif($field.h_type=='file')##文件
+                    <th data-options="field:'${field.c_name}',width:60,formatter:f_grid_file"><div>${field.c_remarks}</div></th>
+    #else  ##其他情况。直接输出
+                     <th data-options="field:'${field.c_name}',width:90"><div>${field.c_remarks}</div></th>
+#end
+#end
+                </tr>
+            </thead>
+        </table>
+        <div id="tb" style="padding:2px 5px;">
+            <div>
+                <a href="javascript:void(0)"iconCls="icon-remove" class="easyui-linkbutton" plain="true" onclick="dellRow()">删除一行</a>
+                <a href="javascript:void(0)" iconCls="icon-reload" class="easyui-linkbutton" plain="true" onclick="easyuiTreeGridReload('dg')">刷新</a>
+                <a href="javascript:void(0)" iconCls="icon-edit" class="easyui-linkbutton" plain="true" onclick="updateRow()">修改</a>
+                <a href="javascript:void(0)" iconCls="icon-tip" class="easyui-linkbutton" plain="true" onclick="seeRow()">明细</a>
+            </div>
+#if($MyStyle=='true')
+            <div>
+                <select onchange="$('#dg').treegrid({singleSelect: (this.value == 0)});
+                        pageCN('dg', 100)">
+                    <option value="0">单行选择</option>
+                    <option value="1">多行选择</option>
+                </select>
+                <a href="javascript:void(0)" class="easyui-linkbutton" plain="true" onclick="update10()">反审核</a>
+                <a href="javascript:void(0)" class="easyui-linkbutton" plain="true" onclick="update40()">反作废</a>
+                <a href="javascript:void(0)" class="easyui-linkbutton" plain="true" onclick="update04()">作废</a>
+                <a href="javascript:void(0)" class="easyui-linkbutton" plain="true" onclick="update01()">审核</a>
+            </div>
+#end
+        </div>
+        <div id="showUpdatePage" class="easyui-window"
+             data-options="closable:false,closed:true,modal:true,maximized:true">
+        </div>
+        <div id="showSeeOnePage" class="easyui-window"
+             data-options="closable:false,closed:true,modal:true,maximized:true">
+        </div>
+        <div id="gridShowIMG"></div>
+    </body>
+</html>

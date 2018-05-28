@@ -1,0 +1,60 @@
+#set($D='$')##表示美元协定整个项目都表示这个意思
+#set($MyTreeMenuID="divID_Tree_menu_${bean.name_bean}")##放树菜单的div域
+#set($MyFormID="${bean.name_bean}FormID")##表单的ID
+#set($treeMyid='')
+#set($treeMyid_getMethod='')
+#set($treeMyid_setMethod='')
+#set($treeMypid='')
+#set($treeMyid_getMethod='')
+#set($treeMyid_setMethod='')
+#set($treeMyname='')
+#set($treeMyname_getMethod='')
+#set($treeMyname_setMethod='')
+#foreach($field in ${fields})
+    #if(${field.tree}=='id')
+        #set($treeMyid="${field.c_name}")
+        #set($treeMyid_getMethod="${field.c_method_get}")
+        #set($treeMyid_setMethod="${field.c_method_set}")
+    #elseif(${field.tree}=='pid')
+        #set($treeMypid="${field.c_name}")
+        #set($treeMypid_getMethod="${field.c_method_get}")
+        #set($treeMypid_setMethod="${field.c_method_set}")
+    #elseif(${field.tree}=='name')
+        #set($treeMyname="${field.c_name}")
+        #set($treeMyname_getMethod="${field.c_method_get}")
+        #set($treeMyname_setMethod="${field.c_method_set}")
+    #end
+#end
+//页面文档加载完后-调用此函数。
+//需要初始化的，统一放到此函数来
+function inidoAdd() {
+    toCreateTree("${MyTreeMenuID}", "${treeMyid}", "${treeMypid}", "${treeMyname}", "${bean.request_url}${bean.request_url_select}/json.jw", false, function (event, id, treeNode) {
+        $("#${treeMypid}").val(treeNode.$treeMyid)
+        $("#${treeMypid}_mc").val(treeNode.${treeMyname})
+    }, true);
+}
+//提交表单
+function submitForm() {
+    $('#${MyFormID}').form('submit', {
+        onSubmit: function () {
+            var vcheck = $(this).form('enableValidation').form('validate');
+            if (vcheck) {
+                var data = {}
+                //data.${treeMyid} = $("#${treeMyid}").val()##后台生成。所以不需要从表单取值
+                
+#foreach($field in $fields)
+#if($field.tree!='id')
+                data.${field.c_name} = fzFormatZT($("#${field.c_name}").val())//${field.c_remarks}
+#end
+#end
+                easyuiAjax("${bean.request_url}${bean.request_url_add}.jw", data, "请确认保存操作", function () {
+                    $.fn.zTree.getZTreeObj("${MyTreeMenuID}").reAsyncChildNodes(null, "refresh");
+                });
+            }
+            return false;
+        }
+    });
+}
+function clearForm() {
+    $('#${MyFormID}').form('clear');
+}

@@ -1,0 +1,139 @@
+#set($D='$')##表示美元协定整个项目都表示这个意思
+##后台请求-添加
+#set($MyRequest_Add="${bean.request_url}${bean.request_url_add}.jw")
+##后台请求-删除
+#set($MyRequest_Dell="${bean.request_url}${bean.request_url_dell}.jw")
+##后台请求-修改
+#set($MyRequest_Edit="${bean.request_url}${bean.request_url_update}.jw")
+#set($MyRequest_Edit_Select="${bean.request_url}${bean.request_url_update}/select.jw")##查询修改的记录
+##后台请求-修改-单据状态操作
+#set($MyRequest_Edit_Examine="${bean.request_url}${bean.request_url_update}/examine.jw")##审核
+#set($MyRequest_Edit_Unexamine="${bean.request_url}${bean.request_url_update}/unexamine.jw")##反审核
+#set($MyRequest_Edit_Void="${bean.request_url}${bean.request_url_update}/void.jw")##作废
+#set($MyRequest_Edit_Unvoid="${bean.request_url}${bean.request_url_update}/unvoid.jw")##反作废
+##后台请求-查询
+#set($MyRequest_Select_Json="${bean.request_url}${bean.request_url_select}/json.jw")##
+#set($MyRequest_Select_Grid="${bean.request_url}${bean.request_url_select}/grid.jw")##
+#set($MyRequest_Select_One="${bean.request_url}${bean.request_url_select}/selectOne.jw")##查询一条记录
+##前端相关
+#set($MyTreeMenuID="divID_Tree_menu_${bean.name_bean}")##放树菜单的div域
+#set($MyFormID="${bean.name_bean}FormID")##表单的ID
+#set($MyStyle='')##是否启用了单据状态
+#set($MyStyleName='')##单据状态名
+#set($treeMyid='')
+#set($treeMyid_getMethod='')
+#set($treeMyid_setMethod='')
+#set($treeMypid='')
+#set($treeMyid_getMethod='')
+#set($treeMyid_setMethod='')
+#set($treeMyname='')
+#set($treeMyname_getMethod='')
+#set($treeMyname_setMethod='')
+#foreach($field in ${fields})
+#if(${field.tree}=='id')
+#set($treeMyid="${field.c_name}")##找到树的主键
+#set($treeMyid_getMethod="${field.c_method_get}")
+#set($treeMyid_setMethod="${field.c_method_set}")
+#elseif(${field.tree}=='pid')##找到树的父键
+#set($treeMypid="${field.c_name}")
+#set($treeMypid_getMethod="${field.c_method_get}")
+#set($treeMypid_setMethod="${field.c_method_set}")
+#elseif(${field.tree}=='name')##找到树的名称
+#set($treeMyname="${field.c_name}")
+#set($treeMyname_getMethod="${field.c_method_get}")
+#set($treeMyname_setMethod="${field.c_method_set}")
+#elseif(${field.style}=='true')##是否启用了单据状态
+#set($MyStyle='true')##是
+#set($MyStyleName="${field.c_name}")
+#end
+#end
+function dellRow() {
+    var rows = $('#dg').treegrid('getSelections');
+    if (!rows[0]) {
+        $.messager.alert('提示', '请选择行');
+        return;
+    } 
+#if($MyStyleName!='')##表示启用了单据状态管理
+    else if (rows[0].${MyStyleName} != '0') {
+        $.messager.alert('异常', '单据锁定，无法删除');
+        return;
+    }
+#end
+    easyuiAjax("${MyRequest_Dell}", {id: rows[0].${treeMyid}}, "请确认删除操作", function () {
+        easyuiTreeGridReload('dg')
+    });
+}
+function updateRow() {
+    var rows = $('#dg').treegrid('getSelections');
+    if (!rows[0]) {
+        $.messager.alert('提示', '请选择行');
+        return;
+    } 
+#if($MyStyleName!='')##表示启用了单据状态管理
+    else if (rows[0].${MyStyleName} != '0') {
+        $.messager.alert('异常', '单据锁定，无法修改');
+        return;
+    }
+#end
+    easyuiLoadWindowByURL('showUpdatePage', '修改', '${MyRequest_Edit_Select}?id=' + rows[0].${treeMyid});
+}
+
+function seeRow() {
+    var rows = $('#dg').treegrid('getSelections');
+    if (!rows[0]) {
+        $.messager.alert('提示', '请选择行');
+        return;
+    }
+    easyuiLoadWindowByURL('showSeeOnePage', '明细', '${MyRequest_Select_One}?id=' + rows[0].${treeMyid});
+}
+
+#if($MyStyleName!='')##表示启用了单据状态管理
+//-------------------------单据状态管理-------------------------                
+function update01() {//审核
+    var rows = $('#dg').treegrid('getSelections');
+    if (!rows[0]) {
+        $.messager.alert('提示', '请选择行');
+        return;
+    }
+    easyuiAjax("${MyRequest_Edit_Examine}", {ids: easyuiGetRowsID(rows, '${treeMyid}')}, "请确认审核操作", function () {
+        easyuiTreeGridReload('dg')
+    });
+}
+function update10() {//反审核
+    var rows = $('#dg').treegrid('getSelections');
+    if (!rows[0]) {
+        $.messager.alert('提示', '请选择行');
+        return;
+    }
+    easyuiAjax("${MyRequest_Edit_Unexamine}", {ids: easyuiGetRowsID(rows, '${treeMyid}')}, "请确认反审核操作", function () {
+        easyuiTreeGridReload('dg')
+    });
+}
+function update04() {//作废
+    var rows = $('#dg').treegrid('getSelections');
+    if (!rows[0]) {
+        $.messager.alert('提示', '请选择行');
+        return;
+    }
+    easyuiAjax("${MyRequest_Edit_Void}", {ids: easyuiGetRowsID(rows, '${treeMyid}')}, "请确认作废操作", function () {
+        easyuiTreeGridReload('dg')
+    });
+}
+function update40() {//反作废
+    var rows = $('#dg').treegrid('getSelections');
+    if (!rows[0]) {
+        $.messager.alert('提示', '请选择行');
+        return;
+    }
+    easyuiAjax("${MyRequest_Edit_Unvoid}", {ids: easyuiGetRowsID(rows, '${treeMyid}')}, "请确认反作废操作", function () {
+        easyuiTreeGridReload('dg')
+    });
+}
+#end
+//-------------------------子页面调用方法-------------------------                
+function closethisWindow() {
+    $('#showUpdatePage').panel('close');
+}
+function closethisWindowSeeOne() {
+    $('#showSeeOnePage').panel('close');
+}
