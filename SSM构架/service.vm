@@ -4,6 +4,7 @@
 #set($MyID_t_type='')
 #set($MyID_m_type='')
 #set($MyID_remarks='')
+#set($myBeanName_param="$bean.bean_mc.substring(0,1).toLowerCase()$bean.bean_mc.substring(1,$bean.bean_mc.length())")
 #foreach($field in ${fields})
 #if(${field.t_index}=='PRIMARY KEY')
 #set($MyID_t_name="${field.t_name}")
@@ -34,117 +35,72 @@ public class ${bean.name_service} {
     @Autowired
     private ${bean.name_dao} ${bean.ioc_dao};
 
-    /**
-     * 添加spu商品信息
-     *
-     * @param spuProduct 商品信息
-     */
-    public void save(SpuProduct spuProduct) {
-        fillCreator(spuProduct);
-        spuProduct.setStatus(SpuProduct.STATUS_DOWNLINE);
-        mapper.save(spuProduct);
-    }
+    
+//添加区↓
 
     /**
-     * 根据spu商品ID获取spu商品信息
-     *
-     * @param id spu商品ID
-     * @return spu商品实体
+     * ${bean.bean_bz}:添加一条记录
+     * @param ${myBeanName_param} ${bean.name_bean}实例
      */
-    public SpuProduct get(Long id) {
-        return mapper.get(id);
+    public void save(${bean.name_bean} ${myBeanName_param}){
+        ${bean.ioc_dao}.save(${myBeanName_param});
     }
 
+//添加区↑
+//删除区↓
+
     /**
-     * 修改商品基础信息
-     *
-     * @param spuProduct 商品信息
+     * ${bean.bean_bz}:删除一条记录
+     * @param ${MyID_c_name} ${bean.name_bean}关联表主键的值
      */
-    public void updateBase(SpuProduct spuProduct){
+    public void delete(@Param("${MyID_c_name}") ${MyID_c_type} ${MyID_c_name}){
+        ${bean.ioc_dao}.delete(${MyID_c_name});
+    }
+
+//删除区↑
+//更新区↓
+
+    /**
+     * ${bean.bean_bz}:修改一条记录
+     * @param ${myBeanName_param} ${bean.name_bean}关联表的实例
+     */
+    void updateBase(${bean.name_bean} ${myBeanName_param}){
         fillModifier(spuProduct);
-        mapper.updateBase(spuProduct);
+        ${bean.ioc_dao}.updateBase(${myBeanName_param});
     }
 
     /**
-     * 修改商品型号组合
-     *  @param spuProduct 商品信息
+     * ${bean.bean_bz}:修改状态
+     * @param ${myBeanName_param} ${bean.name_bean}关联表的实例
      */
-    public void updateAttrs(SpuProduct spuProduct){
-        fillModifier(spuProduct);
-        mapper.updateAttrs(spuProduct);
-    }
+    void updateStatus(${bean.name_bean} ${myBeanName_param});
+
+//更新区↑
+//查询区↓
 
     /**
-     * 修改商品及库存状态
-     *  @param spuProduct 商品信息
-     */
-    public void updateStatusAndSkuStatus(SpuProduct spuProduct){
-        fillModifier(spuProduct);
-        mapper.updateStatus(spuProduct);
-        SkuProduct skuProduct =new SkuProduct();
-        skuProduct.setStatus(spuProduct.getStatus());
-        skuProduct.setSpuProductId(spuProduct.getId());
-        fillModifier(skuProduct);
-        skuProductMapper.updateStatusBySpuId(skuProduct);
-    }
-
-    /**
-     * 删除商品及库存
+     * ${bean.bean_bz}：获取一条记录(根据ID)
      *
-     * @param id 商品id
+     * @param ${MyID_c_name} ${bean.name_bean}关联表主键的值
+     * @return ${bean.name_bean}实例
      */
-    public void deleteAndDeleteSku(Long id) {
-        mapper.delete(id);
-        skuProductMapper.deleteBySpuId(id);
-    }
+    ${bean.name_bean} get(@Param("${MyID_c_name}") ${MyID_c_type} ${MyID_c_name});
 
     /**
-     * 获取商品列表，service隔离
-     * @param page 页数
-     * @param size 页数大小
-     * @param serviceNo 服务号id
-     * @param categoryUuid 分类uuid
-     * @param title 商品标题
-     * @return
+     * ${bean.bean_bz}：获取列表
+     * @param condition 条件-字符串
+     * @return List ${bean.name_bean}集合
      */
-    public RestfulPageResult findByService(long serviceNo,
-                                           String categoryUuid,
-                                           String title,
-                                           int page,
-                                           int size) {
-        int start = (page - 1) * size;
-        List<SpuProduct> spuProducts=mapper.findByService(serviceNo,categoryUuid,title,start,size);
-        long count = mapper.getCountByService(serviceNo,categoryUuid,title);
-        return new RestfulPageResult<>(count,spuProducts);
-    }
+    List findByCondition(@Param("condition") String condition);
 
     /**
-     * 获取商品列表，service隔离
-     * @param page 页数
-     * @param size 页数大小
-     * @param serviceNo 服务号id
-     * @param categoryUuid 分类uuid
-     * @param title 商品标题
-     * @return
+     * ${bean.bean_bz}： 获取总数
+     * @param condition 条件-字符串
+     * @return long
      */
-    public RestfulPageResult findByServiceWithInventories(long serviceNo,
-                                           String categoryUuid,
-                                           String title,
-                                           int page,
-                                           int size) {
-        int start = (page - 1) * size;
-        List<SpuProduct> spuProducts=mapper.findByServiceWithInventories(serviceNo,categoryUuid,title,start,size);
-        long count = mapper.getCountByService(serviceNo,categoryUuid,title);
-        return new RestfulPageResult<>(count,spuProducts);
-    }
+    long getCountByCondition(@Param("condition") String condition);
 
-    /**
-     * 获取分类及子分类的商品列表
-     *
-     * @param category_uuid 分类uuid
-     * @return
-     */
-    public List<SpuProduct> findLikeCategoryUuid(String category_uuid) {
-        return mapper.findLikeCategoryUuid(category_uuid);
-    }
+//查询区↑
+
+
 }
