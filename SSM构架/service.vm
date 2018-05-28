@@ -79,7 +79,7 @@ public class ${bean.name_service} {
         ${bean.ioc_dao}.updateBase(${myBeanName_param});
     }
 
-//更新区↑
+//更新区↑ 
 //查询区↓
 
     /**
