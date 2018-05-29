@@ -23,7 +23,8 @@ import ${bean.package_dao}.${bean.name_dao};
 import hk.advanpro.spring.web.support.RestfulPageResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-
+import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -67,7 +68,7 @@ public class ${bean.name_service} {
      * @param ${myBeanName_param} ${bean.name_bean}关联表的实例
      */
     public void updateBase(${bean.name_bean} ${myBeanName_param}){
-        fillModifier(spuProduct);
+        fillModifier(${myBeanName_param});
         ${bean.ioc_dao}.updateBase(${myBeanName_param});
     }
 
@@ -77,7 +78,7 @@ public class ${bean.name_service} {
      */
     public void updateStatus(${bean.name_bean} ${myBeanName_param})
        void updateBase(${bean.name_bean} ${myBeanName_param}){
-        fillModifier(spuProduct);
+        fillModifier(${myBeanName_param});
         ${bean.ioc_dao}.updateBase(${myBeanName_param});
     }
 
@@ -90,21 +91,27 @@ public class ${bean.name_service} {
      * @param ${MyID_c_name} ${bean.name_bean}关联表主键的值
      * @return ${bean.name_bean}实例
      */
-    public ${bean.name_bean} get(@Param("${MyID_c_name}") ${MyID_c_type} ${MyID_c_name});
+    public ${bean.name_bean} get(@Param("${MyID_c_name}") ${MyID_c_type} ${MyID_c_name}){
+         return ${bean.ioc_dao}.get( ${MyID_c_name});
+    }
 
     /**
      * ${bean.bean_bz}：获取列表
      * @param condition 条件-字符串
      * @return List ${bean.name_bean}集合
      */
-    public List findByCondition(@Param("condition") String condition);
+    public List findByCondition(@Param("condition") String condition){
+        return ${bean.ioc_dao}.findByCondition(condition);
+    }
 
     /**
      * ${bean.bean_bz}： 获取总数
      * @param condition 条件-字符串
      * @return long
      */
-    public long getCountByCondition(@Param("condition") String condition);
+    public long getCountByCondition(@Param("condition") String condition){
+        return ${bean.ioc_dao}.getCountByCondition(condition);
+    }
 
 //查询区↑
 
