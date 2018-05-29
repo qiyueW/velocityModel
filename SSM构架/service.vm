@@ -76,8 +76,7 @@ public class ${bean.name_service} {
      * ${bean.bean_bz}:修改状态
      * @param ${myBeanName_param} ${bean.name_bean}关联表的实例
      */
-    public void updateStatus(${bean.name_bean} ${myBeanName_param})
-       void updateBase(${bean.name_bean} ${myBeanName_param}){
+    public void updateStatus(${bean.name_bean} ${myBeanName_param}){
         fillModifier(${myBeanName_param});
         ${bean.ioc_dao}.updateBase(${myBeanName_param});
     }
