@@ -30,14 +30,12 @@
 function inidoAdd() {
     toCreateTree("${MyTreeMenuID}", "${treeMyid}", "${treeMypid}", "${treeMyname}", "${bean.request_url}${bean.request_url_select}/json.jw", false, function (event, id, treeNode) {
         $("#${treeMypid}").val(treeNode.$treeMyid)
-        $("#${treeMypid}_mc").val(treeNode.${treeMyname})
+        $("#${treeMypid}_mc").textbox('setValue',treeNode.${treeMyname});        
     }, true);
 }
 //提交表单
-function submitForm() {
-    $('#${MyFormID}').form('submit', {
-        onSubmit: function () {
-            var vcheck = $(this).form('enableValidation').form('validate');
+function submitForm(formid) {
+    var vcheck = $('#'+formid).form('enableValidation').form('validate');
             if (vcheck) {
                 var data = {}
                 //data.${treeMyid} = $("#${treeMyid}").val()##后台生成。所以不需要从表单取值
@@ -51,9 +49,6 @@ function submitForm() {
                     $.fn.zTree.getZTreeObj("${MyTreeMenuID}").reAsyncChildNodes(null, "refresh");
                 });
             }
-            return false;
-        }
-    });
 }
 function clearForm() {
     $('#${MyFormID}').form('clear');

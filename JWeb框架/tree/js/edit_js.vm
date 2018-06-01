@@ -33,7 +33,7 @@ function inido() {
         $.messager.confirm('更换上级', '请确认是否改变他的上级?', function (r) {
             if (r) {
                 $("#${treeMypid}").val(treeNode.${treeMyid})
-                $("#${treeMypid}_mc").val(treeNode.${treeMyname})
+                $("#${treeMypid}_mc").textbox('setValue',treeNode.${treeMyname}); 
             }
         });
     }
@@ -51,10 +51,8 @@ function closeMySelf() {
     }
 }
 //提交表单
-function submitForm() {
-    $('#${MyFormID}').form('submit', {
-        onSubmit: function () {
-            var vcheck = $(this).form('enableValidation').form('validate');
+function submitForm(formid) {
+    var vcheck = $('#'+formid).form('enableValidation').form('validate');
             if (vcheck) {
                 close=true
                 var data = {}
@@ -65,12 +63,9 @@ function submitForm() {
                     $.fn.zTree.getZTreeObj("${MyTreeMenuID}").reAsyncChildNodes(null, "refresh");
                 });
             }
-            return false;
-        }
-    });
 }
 //移除上级
 function clearFather() {
     $('#${treeMypid}').val('')
-    $('#${treeMypid}_mc').val('')
+    $("#${treeMypid}_mc").textbox('setValue',''); 
 }
