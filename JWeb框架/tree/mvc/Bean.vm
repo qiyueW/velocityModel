@@ -12,7 +12,7 @@ import java.util.Date;
 public class ${bean.name_bean} {
 
 #foreach($field in $fields)
- #if($field.t_indexs=='UNIQUE INDEX')
+ #if($field.t_index=='PRIMARY KEY')
     @system.base.annotation.ID
     $field.c_scope  $field.c_type $field.c_name ;// $field.c_remarks
  #elseif($field.c_type=='Date')

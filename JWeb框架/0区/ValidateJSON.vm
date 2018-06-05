@@ -1,0 +1,35 @@
+package ${bean.package_validate};
+
+import java.util.Map;
+import system.web.validate.model.ValidateResultModel;
+import system.web.validate.model.ValidateFieldModel;
+import system.web.JWeb;
+import system.web.validate.model.ValidateJsonModel;
+import system.web.validate.model.ValidateModel;
+import ${bean.package_bean}.${bean.name_bean};
+
+public class ${bean.name_bean}Validate extends ValidateModel {
+
+    public ${bean.name_bean}Validate() {
+        super(JSON_MODEL);
+        ValidateJsonModel jsonEngine = new ValidateJsonModel(${bean.name_bean}.class);
+        this.openJSONEngine(jsonEngine);
+    }
+
+    @Override
+    public void iniValidate() {
+        super
+#foreach($field in $fields)
+#if($field.v_check!='')
+                .put("$field.c_name",$field.v_regex, $field.v_errormsg, $field.v_check)//$field.c_remarks
+#end
+#end
+;
+    }
+
+    @Override
+    public ValidateResultModel recheck(JWeb jw, Map<String, ValidateFieldModel> map, ValidateResultModel vr) {
+        return vr;
+    }
+
+}

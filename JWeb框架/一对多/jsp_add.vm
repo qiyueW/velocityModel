@@ -1,0 +1,164 @@
+#set($D='$')##表示美元协定整个项目都表示这个意思
+#set($NyJSFilePath_Add="${D}{path_home}/${bean.path_js_user}/${bean.js_name_add}.js")##添加页面 引用的js文件路径-项目模板下通用
+#set($NyJSFilePath_Edit="${D}{path_home}/${bean.path_js_user}/${bean.js_name_update}.js")##修改页面 引用的js文件路径-项目模板下通用
+#set($NyJSFilePath_List="${D}{path_home}/${bean.path_js_user}/${bean.js_name_list}.js")##列表页面 引用的js文件路径-项目模板下通用
+#set($MyStyle='')##是否启用了单据状态
+#set($MyStyleName='')##单据状态名
+#set($MyStyle_getMethod='')##单据状态-get方法
+#set($MyStyle_setMethod='')##单据状态-set方法
+#set($MyFileOrImg='')
+#set($MyFormID="${bean.name_bean}FormID")##表单的ID
+#foreach($field in ${fields})
+#if(${field.tree}=='id')
+#set($treeMyid="${field.c_name}")
+#set($treeMyid_getMethod="${field.c_method_get}")
+#set($treeMyid_setMethod="${field.c_method_set}")
+#elseif(${field.tree}=='pid')
+#set($treeMypid="${field.c_name}")
+#set($treeMypid_getMethod="${field.c_method_get}")
+#set($treeMypid_setMethod="${field.c_method_set}")
+#elseif(${field.tree}=='name')
+#set($treeMyname="${field.c_name}")
+#set($treeMyname_getMethod="${field.c_method_get}")
+#set($treeMyname_setMethod="${field.c_method_set}")
+#elseif(${field.style}=='true')##是否启用了单据状态
+#set($MyStyle='true')##是
+#set($MyStyleName="${field.c_name}")
+#set($MyStyle_getMethod="${field.c_method_get}")
+#set($MyStyle_setMethod="${field.c_method_set}")        
+#elseif($field.h_type=='img'||$field.h_type=='file'||$field.h_type=='imgs'||$field.h_type=='files')##是否有文件上传
+#set($MyFileOrImg='true')##是
+#end
+#end
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<!--后台UI组件Start-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>添加部门管理</title>
+        <%@include file="/WEB-INF/jspf/easyuiLocal.jspf"%>
+        <%@include file="/WEB-INF/jspf/artDialog.jspf"%>
+        <%@include file="/WEB-INF/jspf/ztree.jspf"%>
+        <%@include file="/WEB-INF/jspf/GG.jspf"%>
+        <script type="text/javascript" src="${NyJSFilePath_Add}"></script>//测试时，调整防缓存：?id=<%=new Date()%>
+        <script>
+            $(function () {
+                f_extend_select();
+                for (var i = 0; i < 50; i++){
+                    $('#dg').datagrid('insertRow', {//tiaojian_panduanfuhao:'IN'
+                        index: 1,
+                        row: {}
+                    })
+                }
+#foreach($field in $fields1)
+#if($field.h_hidden=='true')
+                $D('#dg').datagrid('hideColumn', '${field.c_name}');
+#end
+#end               
+            });
+//            function f_panduan(value, row, index) {
+//                if (value instanceof Object) {
+//                    row.tiaojian_panduanfuhao = value.tiaojian_panduan;
+//                    row.tiaojian_panduanName = value.tiaojian_panduanName;
+//                }
+//                return row.tiaojian_panduanName?row.tiaojian_panduanName:value;
+//            }
+        </script>
+    </head>
+    <body class="easyui-layout">
+        <div data-options="region:'west',split:true,title:''" style="width:250px;padding:10px;">
+            <div id="divID_Tree_menu_BM" class="ztree">bean</div>
+        </div>
+        <div data-options="region:'center'" id='centerMain'>
+            <table id="dg" class="easyui-datagrid" fit='true'
+                   data-options="
+                   rownumbers:true,
+                   singleSelect:true,
+                   iconCls: 'icon-edit',
+                   singleSelect: true,
+                   toolbar:'#tb',
+                   onClickCell: onClickCell
+                   ">
+                <thead>
+                    <tr>                
+#foreach($field in $fields1)
+#if($field.h_hidden=='true')## 主键类的 隐藏。所以不需要设置长度
+                    <th data-options="field:'${field.c_name}'">${field.c_remarks}</th>
+#else  ##其他情况。直接输出
+                     <th data-options="field:'${field.c_name}',width:90,editor:'text'"><div>${field.c_remarks}</div></th>
+#end
+#end
+                    </tr>
+                </thead>
+            </table>
+            <div id="tb" style="padding:2px 5px;">
+                <div>
+                    <a href="javascript:void(0)" class="easyui-linkbutton" plain="true" onclick="clearForm()">关闭条件框</a>
+                    <a href="javascript:void(0)" class="easyui-linkbutton" plain="true" onclick="MoveUp()">上移</a>
+                    <a href="javascript:void(0)" class="easyui-linkbutton" plain="true" onclick="MoveDown()">下移</a>
+                    <a href="javascript:void(0)" class="easyui-linkbutton" plain="true" onclick="dellRow()">移除行</a>
+                    <a href="javascript:void(0)" class="easyui-linkbutton" plain="true" onclick="addRow()">添加行</a>
+                    <a href="javascript:void(0)" class="easyui-linkbutton" plain="true" onclick="clearValue()">清空值</a>
+                    <a href="javascript:void(0)" class="easyui-linkbutton" plain="true"onclick="clearForm()">清空</a>
+                    <a href="javascript:void(0)" class="easyui-linkbutton" id="submitFormID" plain="true"onclick="submitForm('${MyFormID}')">保存新增的查询方案</a>
+                </div>
+                <div>
+<div class="container"  id="${MyFormID}">
+#set($mustcheck='')
+#foreach($field in $fields)
+#if($field.tree!='id'&&$field.tree!='pid'&&$field.v_check!=''&&$field.h_hidden!='true'&&$field.style!='true')
+#if($field.v_check!='')##开始：是否执行查检
+ #set($mustcheck="required:${field.v_check}")
+#else
+  #set($mustcheck="required:false")
+#end##结束：是否执行查检
+#if($field.h_hidden!='true')## 非主键类的
+#if($field.c_dateformat!='')##日期或时间
+                <div class="row-fluid">
+                    <div class="span12">
+                        <span class="myname" >${field.c_remarks}</span>
+                        <input class="easyui-datebox" type="text"  id="${field.c_name}" name="${field.c_name}" data-options="${mustcheck},formatter:easyuidateformatter,parser:easyuidateparser"/>
+                    </div>
+                </div>
+#elseif($field.h_type=='textarea')##文本域类的
+                <div class="row-fluid">
+                    <div class="span12">
+                        <span class="myname" >${field.c_remarks}</span>
+                        <textarea rows=5  class="textarea easyui-validatebox" id="${field.c_name}" name="${field.c_name}" data-options="${mustcheck}"></textarea>
+                    </div>
+                </div>
+#elseif($field.h_type=='img'||$field.h_type=='file')##图片类
+                <div class="row-fluid">
+                    <div class="span12">
+                        <span class="myname">
+                            <div id="${field.c_name}_choose">${field.c_remarks}<input type="hidden"  id="${field.c_name}" /></div>
+                        </span>
+                        <div id="${field.c_name}uploader">
+                            <div id="thelist" class="uploader-list"></div>
+                            <input type="text" id="${field.c_name}FN"  readonly="true" class="easyui-textbox">
+                        </div>
+                    </div>
+                </div>
+##其他的类型拓展
+#else
+                <div class="row-fluid">
+                    <div class="span12">
+                        <span class="myname" >${field.c_remarks}</span>
+                        <input type="text"  id="${field.c_name}" name="${field.c_name}" data-options="${mustcheck}" class="easyui-textbox"/>
+                    </div>
+                </div>
+#end
+#end
+#end
+#end
+            </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+
+        </script>
+    </body>
+</html>
+

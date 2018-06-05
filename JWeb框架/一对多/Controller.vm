@@ -1,0 +1,221 @@
+#set($mytestDEV='//')
+#set($MyStyle='')##是否启用了单据状态
+#set($MyStyleName='')##单据状态名
+#set($MyStyle_getMethod='')##单据状态-get方法
+#set($MyStyle_setMethod='')##单据状态-set方法
+#set($treeMyid='')
+#set($treeMyid_getMethod='')
+#set($treeMyid_setMethod='')
+#set($treeMypid='')
+#set($treeMyid_getMethod='')
+#set($treeMyid_setMethod='')
+#set($treeMyname='')
+#set($treeMyname_getMethod='')
+#set($treeMyname_setMethod='')
+#set($MyImgOne='')##图片上传
+#set($MyFileOne='')##文件上传
+#foreach($field in ${fields})
+#if(${field.tree}=='id')
+#set($treeMyid="${field.c_name}")
+#set($treeMyid_getMethod="${field.c_method_get}")
+#set($treeMyid_setMethod="${field.c_method_set}")
+#elseif(${field.tree}=='pid')
+#set($treeMypid="${field.c_name}")
+#set($treeMypid_getMethod="${field.c_method_get}")
+#set($treeMypid_setMethod="${field.c_method_set}")
+#elseif(${field.tree}=='name')
+#set($treeMyname="${field.c_name}")
+#set($treeMyname_getMethod="${field.c_method_get}")
+#set($treeMyname_setMethod="${field.c_method_set}")
+#elseif(${field.style}=='true')##是否启用了单据状态
+#set($MyStyle='true')##是
+#set($MyStyleName="${field.c_name}")
+#set($MyStyle_getMethod="${field.c_method_get}")
+#set($MyStyle_setMethod="${field.c_method_set}")
+#elseif($field.h_type=='img')##是否有图片上传
+#set($MyImgOne='true')##是
+#elseif($field.h_type=='file')##是否有文件上传
+#set($MyFileOne='true')##是
+#end
+#end
+package ${bean.package_hm};
+
+import system.base.annotation.H;
+import system.base.annotation.M;
+import system.base.annotation.Validate;
+import system.web.JWeb;
+import configuration.MsgVO;
+import java.util.List;
+import system.base.tree.TreeService;
+import system.base.tree.vo.IdPidEnum;
+import configuration.Tool;
+import plugins.easyui.EasyuiService;
+import ${bean.package_bean}.${bean.name_bean};
+import ${bean.package_service}.${bean.name_service};
+
+
+/**
+*1.添加请求路径：${bean.request_url}${bean.request_url_add}.jw <br>
+*2.删除请求路径：${bean.request_url}${bean.request_url_dell}.jw <br>
+*3.修改 <br>
+*   3.1变更请求路径：${bean.request_url}${bean.request_url_update}.jw <br>
+*   3.2查询请求路径：${bean.request_url}${bean.request_url_update}/select.jw <br>
+*4.查询 <br>
+*   4.1全部请求路径（对象实例）：${bean.request_url}${bean.request_url_select}/selectOne.jw <br>
+*   4.2全部请求路径（JSON格式）：${bean.request_url}${bean.request_url_select}/json.jw <br>
+*   4.3全部请求路径（TreeGRID格式）：${bean.request_url}${bean.request_url_select}/grid.jw <br>
+#if($MyStyleName!='')##表示启用了单据状态管理 <br>
+*5.单据状态管理 <br>
+*   5.1审核请求路径   ：${bean.request_url}${bean.request_url_update}/examine.jw <br>
+*   5.2反审核请求路径 ：${bean.request_url}${bean.request_url_update}/unexamine.jw <br>
+*   5.3作废请求路径   ：${bean.request_url}${bean.request_url_update}/void.jw <br>
+*   5.4反作废请求路径 ：${bean.request_url}${bean.request_url_update}/unvoid.jw <br>
+#end
+#if($MyImgOne!=''||$MyFileOne!='')
+*6.上传管理 <br>
+#if($MyImgOne!='')
+*   6.1图片上传请求路径   ：${bean.request_url}/up/img.jw <br>
+#end
+#if($MyFileOne!='')
+*   6.2文件上传请求路径   ：${bean.request_url}/up/file.jw <br>
+#end
+#end
+*/
+@H("${bean.request_url}")
+public class ${bean.name_hm} {
+
+    JWeb jw;
+
+    public ${bean.name_hm}(JWeb jw) {
+        this.jw = jw;
+    }
+//===================添加操作=============================    
+    $mytestDEV@system.web.power.ann.SQ("${bean.power_add}")
+    @M("${bean.request_url_add}")
+    @Validate(${bean.package_validate}.${bean.name_validate}.class)
+    public void add() {
+        ${bean.name_bean} obj = jw.getObject(${bean.name_bean}.class);
+        if (null == obj.${treeMypid_getMethod}()|| obj.${treeMypid_getMethod}().isEmpty()) {
+            obj.${treeMypid_setMethod}("0");
+        }
+        //其他一些预定值设置
+        jw.printOne(${bean.name_service}.addOne(obj));
+    }
+//===================删除操作=============================    
+    $mytestDEV@system.web.power.ann.SQ("${bean.power_dell}")
+    @M("${bean.request_url_dell}")
+    public void dellVast() {
+        String id = jw.getString("id");
+        if (null == id || id.length() != 24) {
+            return;
+        }
+        jw.printOne(${bean.name_service}.dellOne(id));
+    }
+//===================修改操作=============================    
+    $mytestDEV@system.web.power.ann.SQ("${bean.power_update}")
+    @M("${bean.request_url_update}")
+    @Validate(${bean.package_validate}.${bean.name_validate}.class)
+	public void update() {
+		${bean.name_bean} obj = jw.getObject(${bean.name_bean}.class);
+		if (null == obj.${treeMyid_getMethod}() || obj.${treeMyid_getMethod}().length() != 24)
+			return;
+		if (null == obj.${treeMypid_getMethod}() || obj.${treeMypid_getMethod}().isEmpty())
+			obj.${treeMypid_setMethod}("0");
+
+		List<${bean.name_bean}> list = ${bean.name_service}.select();
+		int tkey=TreeService.CHECK.getError_FatherIsSon(list, "${treeMyid}", "${treeMypid}", obj.${treeMyid_getMethod}(),obj.${treeMypid_getMethod}()).key;
+		
+        if (tkey == IdPidEnum.ERROR_FatherIsYourSelft.key) {
+            jw.printOne(MsgVO.setError("修改失败:自己是自己的上级!"));
+            return;
+        }
+        if (tkey == IdPidEnum.ERROR_FatherIsYourSon.key) {
+            jw.printOne(MsgVO.setError("修改失败:自己的子级是自己的上级!"));
+            return;
+        }
+        jw.printOne(${bean.name_service}.update(obj));
+	}
+    $mytestDEV@system.web.power.ann.SQ("${bean.power_update}")
+    @M("${bean.request_url_update}/select")
+	public void updateSelect() {
+		String id = jw.getString("id");
+		${bean.name_bean} obj = ${bean.name_service}.selectOne(id);
+		if (null == obj.${treeMyid_getMethod}())
+			return;
+		jw.request.setAttribute("${bean.name_bean}", obj);
+        jw.request.setAttribute("fl_P", ${bean.name_service}.selectOne(obj.${treeMypid_getMethod}()));
+		jw.forward("/${bean.path_userpage_admin}/${bean.page_name_update}.jsp");
+	}
+//===================查询操作============================= 
+   $mytestDEV@system.web.power.ann.SQ("${bean.power_select}") 
+    @M("${bean.request_url_select}/selectOne")
+	public void selectOne() {
+		String id = jw.getString("id");
+		${bean.name_bean} obj = ${bean.name_service}.selectOne(id);
+		if (null == obj.${treeMyid_getMethod}())
+			return;
+		jw.request.setAttribute("${bean.name_bean}", obj);
+        jw.request.setAttribute("fl_P", ${bean.name_service}.selectOne(obj.${treeMypid_getMethod}()));
+		jw.forward("/${bean.path_userpage_admin}/one.jsp");
+	}
+
+   $mytestDEV@system.web.power.ann.SQ("${bean.power_select}")
+    @M("${bean.request_url_select}/json")
+    public static void select(JWeb jw) {
+    // jw.printOne(Tool.entityToJSON(DBO.service.S.select(LoufangFL.class, "order by loufangfl_px ASC"))); 如果有排序的话，将loufangfl_px字段替换为你的项目中的字段
+        jw.printOne(Tool.entityToJSON(${bean.name_service}.select()).replace("\n", "/n"));
+    }
+   $mytestDEV@system.web.power.ann.SQ("${bean.power_select}")
+    @M("${bean.request_url_select}/json2")
+    public static void select2(JWeb jw) {
+        jw.printOne(EasyuiService.formatTree(${bean.name_service}.select(), "${treeMyid}", "${treeMypid}", "${treeMyname}").replace("\n", "/n"));
+    }
+
+    $mytestDEV@system.web.power.ann.SQ("${bean.power_select}")
+    @M("${bean.request_url_select}/grid")
+    public static void selectUI(JWeb jw) {//_UIGrid
+    //如果有某个字段要进行排序,例 以主键=。=
+        //jw.printOne(EasyuiService.formatTreeGrid(DBO.service.S.select(${bean.name_bean}.class, "order by ${treeMyid} ASC" ), "${treeMyid}", "${treeMypid}", "${treeMyname}"));
+        jw.printOne(EasyuiService.formatTreeGrid(${bean.name_service}.select(), "${treeMyid}", "${treeMypid}", "${treeMyname}").replace("\n", "/n"));
+    }
+#if($MyStyleName!='')##表示启用了单据状态管理
+//---------------------------------------单据状态管理---------------------------------------
+    @M("${bean.request_url_update}/examine")//审核单据
+    public void examine() {
+        jw.printOne(${bean.name_service}.updateStyle_examine(jw.getString("ids")));
+    }
+
+    @M("${bean.request_url_update}/unexamine")//反审核
+    public void unexamine() {
+        jw.printOne(${bean.name_service}.updateStyle_unExamine(jw.getString("ids")));
+    }
+
+    @M("${bean.request_url_update}/void")//作废
+    public void tovoid() {
+        jw.printOne(${bean.name_service}.updateStyle_void(jw.getString("ids")));
+    }
+
+    @M("${bean.request_url_update}/unvoid")//反作废
+    public void untovoid() {
+        jw.printOne(${bean.name_service}.updateStyle_unVoid(jw.getString("ids")));
+    }
+#end
+
+#if($MyFileOne!=''||$MyImgOne!='')
+//---------------------------------------文件图片管理---------------------------------------
+#if($MyImgOne!='')
+    $mytestDEV@system.web.power.ann.SQ("${bean.power_add}")
+    @M("/up/img")//图片上传
+    public void upimg() {
+        jw.printOne(${bean.name_service}.upOneImg(jw.request));
+    }
+#end
+#if($MyFileOne!='')
+    $mytestDEV@system.web.power.ann.SQ("${bean.power_add}")
+    @M("/up/file")//文件上传
+    public void upfile() {
+        jw.printOne(${bean.name_service}.upOneFile(jw.request));
+    }
+#end
+#end
+}
