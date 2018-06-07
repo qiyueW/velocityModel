@@ -1,31 +1,77 @@
-#set($Myid='')##一方的字段值：ID
-#set($Myid_getMethod='')
-#set($Myid_setMethod='')
-#set($MyidN='')##多方的字段值：ID N
-#set($MyidN_getMethod='')
-#set($MyidN_setMethod='')
-##检查1方的 ID
+#set($D='$')##表示美元协定整个项目都表示这个意思
+#set($NyJSFilePath_Add="${D}{path_home}/${bean.path_js_user}/${bean.js_name_add}.js")##添加页面 引用的js文件路径-项目模板下通用
+#set($NyJSFilePath_Edit="${D}{path_home}/${bean.path_js_user}/${bean.js_name_update}.js")##修改页面 引用的js文件路径-项目模板下通用
+#set($NyJSFilePath_List="${D}{path_home}/${bean.path_js_user}/${bean.js_name_list}.js")##列表页面 引用的js文件路径-项目模板下通用
+#set($MyURL_Update="${bean.request_url}${bean.request_url_update}.jw")
+#set($MyStyle='')##是否启用了单据状态
+#set($MyStyleName='')##单据状态名
+#set($MyStyle_getMethod='')##单据状态-get方法
+#set($MyStyle_setMethod='')##单据状态-set方法
+#set($MyPXName='')##排序
+#set($MyPX_getMethod='')##排序-get方法
+#set($MyPX_setMethod='')##排序-set方法
+#set($myid='')##1方主键
+#set($myid_getMethod='')
+#set($myid_setMethod='')
+#set($myid2='')##多方主键
+#set($myid2_getMethod='')
+#set($myid2_setMethod='')
+#set($MyImgOne='')
+#set($MyFileOne='')
+#set($MyFileOrImg='')
+#set($MyFormID="${bean.name_bean}FormID")##表单的ID
 #foreach($field in ${fields})
-#if($field.t_index=='PRIMARY KEY')
-#set($Myid="${field.c_name}")
-#set($Myid_getMethod="${field.c_method_get}")
-#set($Myid_setMethod="${field.c_method_set}")
+#if(${field.t_index}=='PRIMARY KEY')
+#set($myid="${field.c_name}")
+#set($myid_getMethod="${field.c_method_get}")
+#set($myid_setMethod="${field.c_method_set}")
+#elseif(${field.style}=='true')##是否启用了单据状态
+#set($MyStyle='true')##是
+#set($MyStyleName="${field.c_name}")
+#set($MyStyle_getMethod="${field.c_method_get}")
+#set($MyStyle_setMethod="${field.c_method_set}")
+#elseif(${field.style}=='px')##是否启用排序
+#set($MyPXName="${field.c_name}")
+#set($MyPX_getMethod="${field.c_method_get}")
+#set($MyPX_setMethod="${field.c_method_set}")
+#elseif($field.h_type=='img')##是否有图片上传
+#set($MyImgOne='true')##是
+#elseif($field.h_type=='file')##是否有文件上传
+#set($MyFileOne='true')##是    
+#elseif($field.h_type=='img'||$field.h_type=='file'||$field.h_type=='imgs'||$field.h_type=='files')##是否有文件上传
+#set($MyFileOrImg='true')##是
 #end
 #end
-##检查多方的 ID
 #foreach($field in ${fields1})
-#if($field.t_index=='PRIMARY KEY')
-#set($MyidN="${field.c_name}")
-#set($MyidN_getMethod="${field.c_method_get}")
-#set($MyidN_setMethod="${field.c_method_set}")
+#if(${field.t_index}=='PRIMARY KEY')
+#set($myid2="${field.c_name}")
+#set($myid2_getMethod="${field.c_method_get}")
+#set($myid2_setMethod="${field.c_method_set}")
 #end
 #end
-////iniEvent inieditor
-////初始化事件
-////绑定FORM提交事件
+//页面文档加载完后-调用此函数。
+//需要初始化的，统一放到此函数来
+//初始化
+function inido() {
+
+}
+var close = false;
+function closeMySelf() {
+    if (!close) {
+        $.messager.confirm('请确认', "单据还没保存，是否关闭此页面?", function (r) {
+            if (r) {
+                window.parent.closethisWindow();
+            }
+        });
+    } else {
+        window.parent.closethisWindow();
+    }
+}
+//提交表单
 function submitForm(formid) {
     var vcheck = $('#'+formid).form('enableValidation').form('validate');
     if (vcheck) {
+        close=true;
         $("#dg").datagrid('endEdit', getIndex());
         var datas = $('#dg').datagrid('getData');
         var rs = "";
@@ -34,14 +80,14 @@ function submitForm(formid) {
                 rs = rs + getJsonByBody(datas.rows[i], i == 0 ? null : ",");
         }
         var data = {};
-//  data.${Myid} = $('#${Myid}').val()//主键，将由后台进行生成
+        data.${Myid} = $('#${Myid}').val()//主键
 #foreach($field in $fields)##一方的字段值
 #if($field.t_index!='PRIMARY KEY')
             data.${field.c_name} = $('#${field.c_name}').val() //${field.c_remarks}
 #end
 #end            
         data.jsonkey = rs ? "[" + rs + "]" : "";
-        easyuiAjax("${bean.request_url}${bean.request_url_add}.jw", data, "请确认保存操作", function () {
+        easyuiAjax("${MyURL_Update}", data, "请确认修改操作", function () {
             //回调函数
         });
     }
@@ -59,6 +105,7 @@ function submitForm(formid) {
         return str + "}";
     }
 }
+
 function getIndex() {
     var row = $("#dg").datagrid('getSelected');
     return row ? $("#dg").datagrid('getRowIndex', row) : 0;

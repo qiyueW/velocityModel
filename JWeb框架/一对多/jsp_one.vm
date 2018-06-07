@@ -1,0 +1,159 @@
+#set($D='$')##表示美元协定整个项目都表示这个意思
+#set($NyJSFilePath_Add="${D}{path_home}/${bean.path_js_user}/${bean.js_name_add}.js")##添加页面 引用的js文件路径-项目模板下通用
+#set($NyJSFilePath_Edit="${D}{path_home}/${bean.path_js_user}/${bean.js_name_update}.js")##修改页面 引用的js文件路径-项目模板下通用
+#set($NyJSFilePath_List="${D}{path_home}/${bean.path_js_user}/${bean.js_name_list}.js")##列表页面 引用的js文件路径-项目模板下通用
+#set($MyURL_SelectBodyGrid="${bean.request_url}${bean.request_url_select}/selectOne/bodyGrid.jw")
+#set($MyStyle='')##是否启用了单据状态
+#set($MyStyleName='')##单据状态名
+#set($MyStyle_getMethod='')##单据状态-get方法
+#set($MyStyle_setMethod='')##单据状态-set方法
+#set($MyPXName='')##排序
+#set($MyPX_getMethod='')##排序-get方法
+#set($MyPX_setMethod='')##排序-set方法
+#set($myid='')##1方主键
+#set($myid_getMethod='')
+#set($myid_setMethod='')
+#set($myid2='')##多方主键
+#set($myid2_getMethod='')
+#set($myid2_setMethod='')
+#set($MyImgOne='')
+#set($MyFileOne='')
+#set($MyFileOrImg='')
+#set($MyFormID="${bean.name_bean}FormID")##表单的ID
+#foreach($field in ${fields})
+#if(${field.t_index}=='PRIMARY KEY')
+#set($myid="${field.c_name}")
+#set($myid_getMethod="${field.c_method_get}")
+#set($myid_setMethod="${field.c_method_set}")
+#elseif(${field.style}=='true')##是否启用了单据状态
+#set($MyStyle='true')##是
+#set($MyStyleName="${field.c_name}")
+#set($MyStyle_getMethod="${field.c_method_get}")
+#set($MyStyle_setMethod="${field.c_method_set}")
+#elseif(${field.style}=='px')##是否启用排序
+#set($MyPXName="${field.c_name}")
+#set($MyPX_getMethod="${field.c_method_get}")
+#set($MyPX_setMethod="${field.c_method_set}")
+#elseif($field.h_type=='img')##是否有图片上传
+#set($MyImgOne='true')##是
+#elseif($field.h_type=='file')##是否有文件上传
+#set($MyFileOne='true')##是    
+#elseif($field.h_type=='img'||$field.h_type=='file'||$field.h_type=='imgs'||$field.h_type=='files')##是否有文件上传
+#set($MyFileOrImg='true')##是
+#end
+#end
+#foreach($field in ${fields1})
+#if(${field.t_index}=='PRIMARY KEY')
+#set($myid2="${field.c_name}")
+#set($myid2_getMethod="${field.c_method_get}")
+#set($myid2_setMethod="${field.c_method_set}")
+#end
+#end
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<!--后台UI组件Start-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>添加部门管理</title>
+        <%@include file="/WEB-INF/jspf/easyuiLocal.jspf"%>
+        <%@include file="/WEB-INF/jspf/artDialog.jspf"%>
+        <%@include file="/WEB-INF/jspf/ztree.jspf"%>
+        <%@include file="/WEB-INF/jspf/GG.jspf"%>
+        <script>
+            $(function () {
+#foreach($field in $fields1)
+#if($field.h_hidden=='true')
+                $D('#dg').datagrid('hideColumn', '${field.c_name}');
+#end
+#end               
+            });
+        </script>
+    </head>
+    <body class="easyui-layout">
+#foreach($field in $fields)##主键隐藏起来
+#if($field.h_hidden=='true'||$field.style=='true')##是否主键类的字段
+                    <input type="hidden" id="${field.c_name}" name="${field.c_name}" value="$D{${bean.name_bean}.${field.c_name}}">
+#end
+#end
+        <div data-options="region:'west',split:true,title:''" style="width:250px;padding:10px;">
+            <div id="divID_Tree_menu_BM" class="ztree">bean</div>
+        </div>
+        <div data-options="region:'center'" id='centerMain'>
+            <table id="dg" class="easyui-datagrid" fit='true'
+                   data-options="
+                   rownumbers:true,
+                   singleSelect:true,
+                   toolbar:'#tb',
+                   url:'${path_home}${MyURL_SelectBodyGrid}?pid=$D{${bean.name_bean}.${myid}}'
+                   ">
+                <thead>
+                    <tr>                
+#foreach($field in $fields1)
+#if($field.h_hidden=='true')## 主键类的 隐藏。所以不需要设置长度
+                    <th data-options="field:'${field.c_name}'">${field.c_remarks}</th>
+#else  ##其他情况。直接输出
+                     <th data-options="field:'${field.c_name}',width:90"><div>${field.c_remarks}</div></th>
+#end
+#end
+                    </tr>
+                </thead>
+            </table>
+            <div id="tb" style="padding:2px 5px;">
+                <div>
+                    <a href="javascript:void(0)" class="easyui-linkbutton" plain="true" onclick="closeMySelf()">关闭</a>
+                </div>
+                <div>
+<div class="container"  id="${MyFormID}">
+#set($mustcheck='')
+#foreach($field in $fields)
+#if($field.tree!='id'&&$field.tree!='pid'&&$field.v_check!=''&&$field.h_hidden!='true'&&$field.style!='true')
+#if($field.v_check!='')##开始：是否执行查检
+ #set($mustcheck="required:${field.v_check}")
+#else
+  #set($mustcheck="required:false")
+#end##结束：是否执行查检
+#if($field.h_hidden!='true')## 非主键类的
+#if($field.c_dateformat!='')##日期或时间
+                <div class="row-fluid">
+                    <div class="span12">
+                            <span class="myname" >${field.c_remarks}</span>
+                            <input class="easyui-datebox" type="text"  readonly="true" id="${field.c_name}" value="$D{${bean.name_bean}.${field.c_name}}" name="${field.c_name}" data-options="${mustcheck},formatter:easyuidateformatter,parser:easyuidateparser"/>
+                    </div>
+                </div>                            
+#elseif($field.h_type=='textarea')##文本域类的
+                <div class="row-fluid">
+                    <div class="span12">
+                            <span class="myname" >${field.c_remarks}</span>
+                            <textarea rows=5  class="textarea easyui-validatebox"  readonly="true" id="${field.c_name}" name="${field.c_name}" data-options="${mustcheck}">$D{${bean.name_bean}.${field.c_name}}</textarea>
+                    </div>
+                </div>                            
+#elseif($field.h_type=='img'||$field.h_type=='file')##图片类
+                <div class="row-fluid">
+                    <div class="span12">
+                        <span class="myname">
+                            <div id="${field.c_name}_choose">${field.c_remarks}<input type="hidden"  id="${field.c_name}" value="$D{${bean.name_bean}.${field.c_name}}"/></div>
+                        </span>
+                        <div id="${field.c_name}uploader">
+                            <div id="thelist" class="uploader-list"></div>
+                            <input type="text" id="${field.c_name}FN"  readonly="true" class="easyui-textbox"  value="$D{fn:substring(${bean.name_bean}.${field.c_name},37,fn:length(${bean.name_bean}.${field.c_name}))}">
+                        </div>
+                    </div>
+                </div>                
+#else
+                <div class="row-fluid">
+                    <div class="span12">
+                        <span class="myname" >${field.c_remarks}</span>
+                        <input type="text"  value="$D{${bean.name_bean}.${field.c_name}}"  readonly="true" id="${field.c_name}" name="${field.c_name}" data-options="${mustcheck}" class="easyui-textbox"/>
+                    </div>
+                </div>
+#end
+#end
+#end
+#end
+            </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
+

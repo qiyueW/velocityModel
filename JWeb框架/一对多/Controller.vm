@@ -125,7 +125,7 @@ public class ${bean.name_hm} {
 //===================修改操作=============================    
     $mytestDEV@system.web.power.ann.SQ("${bean.power_update}")
     @M("${bean.request_url_update}")
-    @Validate(${bean.package_validate}.${bean.name_validate}.class)
+    @Validate({${bean.package_validate}.${bean.name_validate}.class,${bean1.package_validate}.${bean1.name_validate}.class})
 	public void update() {
 		${bean.name_bean} obj = jw.getObject(${bean.name_bean}.class);
         List<${bean1.name_bean}> obj2 = (List<${bean1.name_bean}>) jw.request.getAttribute(WebConfigModel.JSONKEY);

@@ -104,7 +104,7 @@
                <div class="row-fluid">
                     <div class="span12">
                         <span class="myname">${field.c_remarks}</span>
-                        <input class="easyui-datebox" type="text" value="$D{${bean.name_bean}.${field.c_name}}"  disabled="true" name="${field.c_name}" data-options="formatter:easyuidateformatter,parser:easyuidateparser"/>
+                        <input class="easyui-datebox" type="text" value="$D{${bean.name_bean}.${field.c_name}}"  readonly="true" name="${field.c_name}" data-options="formatter:easyuidateformatter,parser:easyuidateparser"/>
                     </div>
                 </div>
 #elseif($field.h_type=='textarea')##文本域类的
