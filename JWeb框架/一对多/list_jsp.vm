@@ -76,7 +76,9 @@
     <body class="easyui-layout">
         <table id="dg" class="easyui-datagrid" fit='true'
                url="$D{path_home}${bean.request_url}${bean.request_url_select}/grid.jw"
-               rownumbers="true" showFooter="true" toolbar="#tb"idField="${treeMyid}"  >
+               rownumbers="true" showFooter="true" toolbar="#tb"idField="${treeMyid}"  
+               pagination="true"pageSize="50"pageList="[30,50,100,300,400,500]"
+               >
             <thead>
                 <tr>
                     <th data-options="field:'ck',checkbox:true"></th>##复选框。一定有。放在前面。                

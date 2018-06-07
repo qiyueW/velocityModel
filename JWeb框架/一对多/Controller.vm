@@ -170,7 +170,10 @@ public class ${bean.name_hm} {
     public static void selectGrid(JWeb jw) {
         String condition = "";
         Page page = EasyuiService.getPageAndOrderby(jw);
-        jw.printOne(EasyuiService.formatGrid(${bean.name_service}.select(page.getPage(), page.getRows(), condition, page.getOrderBy())));
+        jw.printOne(EasyuiService.formatGrid(
+            ${bean.name_service}.select(page.getPage(), page.getRows(), condition, page.getOrderBy()),
+            ${bean.name_service}.selectCount(condition))
+        );
     }
 
     //=========表体查询操作===========

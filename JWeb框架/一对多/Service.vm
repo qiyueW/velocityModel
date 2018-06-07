@@ -114,6 +114,16 @@ final public class ${bean.name_service} {
     public static List<${bean1.name_bean}> select2(String pid) {
         return DBO.service.S.selectByCondition(${bean1.name_bean}.class, "WHERE "+PK1+" IN('" + pid + "')");
     }
+//---------------------------------------统计区--------------------------------------
+    /**
+     * 统计表头数据(条件为null或为空时，表示统计整张表)
+     *
+     * @param where 条件
+     * @return int
+     */
+    public static int selectCount(final String where) {
+        return null == where || where.isEmpty() ? DBO.service.S.selectCount(Danju.class) : DBO.service.S.selectCountByCondition(Danju.class, where);
+    }    
 //---------------------------------------增删改--------------------------------------
     /**
      * 添加数据
