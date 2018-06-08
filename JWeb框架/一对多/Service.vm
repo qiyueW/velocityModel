@@ -122,7 +122,7 @@ final public class ${bean.name_service} {
      * @return int
      */
     public static int selectCount(final String where) {
-        return null == where || where.isEmpty() ? DBO.service.S.selectCount(Danju.class) : DBO.service.S.selectCountByCondition(Danju.class, where);
+        return null == where || where.isEmpty() ? DBO.service.S.selectCount(${bean.name_bean}.class) : DBO.service.S.selectCountByCondition(${bean.name_bean}.class, where);
     }    
 //---------------------------------------增删改--------------------------------------
     /**

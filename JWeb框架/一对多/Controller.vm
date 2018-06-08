@@ -163,7 +163,7 @@ public class ${bean.name_hm} {
     public static void selectJSON(JWeb jw) {
         String condition = "";
         Page page = EasyuiService.getPageAndOrderby(jw);
-        jw.printOne(Tool.entityToJSON(DanjuService.select(page.getPage(), page.getRows(), condition, page.getOrderBy())));
+        jw.printOne(Tool.entityToJSON(${bean.name_service}.select(page.getPage(), page.getRows(), condition, page.getOrderBy())));
     }
    $mytestDEV@system.web.power.ann.SQ("${bean.power_select}")
     @M("${bean.request_url_select}/grid")//针对表头的查询-返回Grid数据
@@ -182,7 +182,7 @@ public class ${bean.name_hm} {
     public void selectOneBody() {
         String id = jw.getString("id");
         ${bean1.name_bean} obj = ${bean.name_service}.selectOne2(id);
-        if (null == obj.getDanju_zj()) {
+        if (null == obj.${myid_getMethod}()) {
             jw.printOne("{}");
             return;
         }

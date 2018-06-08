@@ -88,9 +88,9 @@
                ">
             <thead>
                 <tr>
-                    <th data-options="field:'ck',checkbox:true"></th>##复选框。一定有。放在前面。                
+                    <th data-options="field:'ck',checkbox:true"></th>
 #foreach($field in $fields)
-#if($field.h_hidden=='true')## 主键类的 隐藏。所以不需要设置长度
+#if($field.h_hidden=='true')
                     <th data-options="field:'${field.c_name}'">${field.c_remarks}</th>
 #elseif($field.c_dateformat!='')##日期或时间
                     <th data-options="field:'${field.c_name}',width:130"><div>${field.c_remarks}</div></th>

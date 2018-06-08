@@ -35,7 +35,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>添加部门管理</title>
+        <title>${bean.bean_bz}-添加</title>
         <%@include file="/WEB-INF/jspf/easyuiLocal.jspf"%>
         <%@include file="/WEB-INF/jspf/artDialog.jspf"%>
         <%@include file="/WEB-INF/jspf/ztree.jspf"%>
@@ -66,10 +66,12 @@
         </script>
     </head>
     <body class="easyui-layout">
+        <!--
         <div data-options="region:'west',split:true,title:''" style="width:250px;padding:10px;">
             <div id="divID_Tree_menu_BM" class="ztree">bean</div>
         </div>
-        <div data-options="region:'center'" id='centerMain'>
+-->
+    <!--<div data-options="region:'center'" id='centerMain'>-->
             <table id="dg" class="easyui-datagrid" fit='true'
                    data-options="
                    rownumbers:true,
@@ -93,14 +95,13 @@
             </table>
             <div id="tb" style="padding:2px 5px;">
                 <div>
-                    <a href="javascript:void(0)" class="easyui-linkbutton" plain="true" onclick="clearForm()">关闭条件框</a>
                     <a href="javascript:void(0)" class="easyui-linkbutton" plain="true" onclick="MoveUp()">上移</a>
                     <a href="javascript:void(0)" class="easyui-linkbutton" plain="true" onclick="MoveDown()">下移</a>
                     <a href="javascript:void(0)" class="easyui-linkbutton" plain="true" onclick="dellRow()">移除行</a>
                     <a href="javascript:void(0)" class="easyui-linkbutton" plain="true" onclick="addRow()">添加行</a>
                     <a href="javascript:void(0)" class="easyui-linkbutton" plain="true" onclick="clearValue()">清空值</a>
                     <a href="javascript:void(0)" class="easyui-linkbutton" plain="true"onclick="clearForm()">清空</a>
-                    <a href="javascript:void(0)" class="easyui-linkbutton" id="submitFormID" plain="true"onclick="submitForm('${MyFormID}')">保存新增的查询方案</a>
+                    <a href="javascript:void(0)" class="easyui-linkbutton" id="submitFormID" plain="true"onclick="submitForm('${MyFormID}')">保存</a>
                 </div>
                 <div>
 <div class="container"  id="${MyFormID}">
@@ -154,11 +155,7 @@
             </div>
                 </div>
             </div>
-        </div>
-
-        <script>
-
-        </script>
+        <!--</div>-->
     </body>
 </html>
 

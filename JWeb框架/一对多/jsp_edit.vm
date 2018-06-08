@@ -84,16 +84,16 @@
                     <input type="hidden" id="${field.c_name}" name="${field.c_name}" value="$D{${bean.name_bean}.${field.c_name}}">
 #end
 #end
+        <!-- 如果需要左侧导航。
         <div data-options="region:'west',split:true,title:''" style="width:250px;padding:10px;">
             <div id="divID_Tree_menu_BM" class="ztree">bean</div>
         </div>
-        <div data-options="region:'center'" id='centerMain'>
+        -->
+        <!--<div data-options="region:'center'" id='centerMain'>-->
             <table id="dg" class="easyui-datagrid" fit='true'
                    data-options="
                    rownumbers:true,
                    singleSelect:true,
-                   iconCls: 'icon-edit',
-                   singleSelect: true,
                    toolbar:'#tb',
                    url:'${path_home}${MyURL_SelectBodyGrid}?pid=$D{${bean.name_bean}.${myid}}',
                    onClickCell: onClickCell
@@ -170,7 +170,7 @@
             </div>
                 </div>
             </div>
-        </div>
+        <!--</div>-->
     </body>
 </html>
 

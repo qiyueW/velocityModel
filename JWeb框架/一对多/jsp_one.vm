@@ -67,6 +67,9 @@
 #end
 #end               
             });
+            function closeMySelf() {
+                window.parent.closethisWindowSeeOne();//调取aa函数
+            }
         </script>
     </head>
     <body class="easyui-layout">
@@ -75,10 +78,7 @@
                     <input type="hidden" id="${field.c_name}" name="${field.c_name}" value="$D{${bean.name_bean}.${field.c_name}}">
 #end
 #end
-        <div data-options="region:'west',split:true,title:''" style="width:250px;padding:10px;">
-            <div id="divID_Tree_menu_BM" class="ztree">bean</div>
-        </div>
-        <div data-options="region:'center'" id='centerMain'>
+        <!--div data-options="region:'center'" id='centerMain'-->
             <table id="dg" class="easyui-datagrid" fit='true'
                    data-options="
                    rownumbers:true,
@@ -153,7 +153,7 @@
             </div>
                 </div>
             </div>
-        </div>
+        <!--/div-->
     </body>
 </html>
 
