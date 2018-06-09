@@ -71,7 +71,15 @@ final public class ${bean.name_service} {
     public static List<${bean.name_bean}> select() {
         return DBO.service.S.select(${bean.name_bean}.class);
     }
-
+    /**
+     * 检出树
+     *
+     * @param condition
+     * @return List
+     */
+    public static List<${bean.name_bean}> select(String condition) {
+        return DBO.service.S.selectByCondition(${bean.name_bean}.class, condition);
+    }
     /**
      * 检出一条记录
      *

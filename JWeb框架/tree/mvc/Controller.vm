@@ -176,7 +176,12 @@ public class ${bean.name_hm} {
     public static void selectUI(JWeb jw) {//_UIGrid
     //如果有某个字段要进行排序,例 以主键=。=
         //jw.printOne(EasyuiService.formatTreeGrid(DBO.service.S.select(${bean.name_bean}.class, "order by ${treeMyid} ASC" ), "${treeMyid}", "${treeMypid}", "${treeMyname}"));
-        jw.printOne(EasyuiService.formatTreeGrid(${bean.name_service}.select(), "${treeMyid}", "${treeMypid}", "${treeMyname}").replace("\n", "/n"));
+        String x = jw.getString("key");
+        String condition = wx.xt.service.XTTiaojianService.engineToSQLCondition(x);
+        if (condition.length() > 0) {
+            condition = "WHERE " + condition;
+        }
+        jw.printOne(EasyuiService.formatTreeGrid(${bean.name_service}.select(condition), "${treeMyid}", "${treeMypid}", "${treeMyname}").replace("\n", "/n"));
     }
 #if($MyStyleName!='')##表示启用了单据状态管理
 //---------------------------------------单据状态管理---------------------------------------

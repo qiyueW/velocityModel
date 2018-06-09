@@ -47,6 +47,15 @@
 #set($MyStyleName="${field.c_name}")
 #end
 #end
+/**
+ * 过滤条件
+ * @returns {void}
+ */
+function f_condition() {
+    $('#showConditionPage').panel({title: '过滤条件'});
+    $('#showConditionPage').window('open');
+    easyuiLoadWindowByURL('showConditionPage', '过滤条件', '/xt/xttiaojian/ry_tiaojian.jsp?key=${bean.name_bean}');
+}
 function dellRow() {
     var rows = $('#dg').treegrid('getSelections');
     if (!rows[0]) {
@@ -136,4 +145,13 @@ function closethisWindow() {
 }
 function closethisWindowSeeOne() {
     $('#showSeeOnePage').panel('close');
+}
+function f_closeCondition() {
+    $('#showConditionPage').panel('close');
+}
+function f_queryByCondition(jsonData) {
+    $('#showConditionPage').panel('close');
+    var queryParams = $('#dg').treegrid('options').queryParams;
+    queryParams.key =jsonData;
+    $('#dg').treegrid('reload');
 }
