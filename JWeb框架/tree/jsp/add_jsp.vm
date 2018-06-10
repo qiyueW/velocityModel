@@ -48,6 +48,7 @@
         <title>添加${bean.bean_bz}</title>
         <script type="text/javascript" src="${NyJSFilePath_Add}"></script>
         <%@include file="/WEB-INF/jspf/easyuiLocal.jspf"%>
+        <%@include file="/WEB-INF/jspf/boostrap.jspf"%>
         <%@include file="/WEB-INF/jspf/artDialog.jspf"%>
         <%@include file="/WEB-INF/jspf/ztree.jspf"%>
         <%@include file="/WEB-INF/jspf/GG.jspf"%>

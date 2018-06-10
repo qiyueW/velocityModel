@@ -46,9 +46,10 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>添加${bean.bean_bz}</title>
+        <title>修改${bean.bean_bz}</title>
         <script type="text/javascript" src="${NyJSFilePath_Edit}"></script>
         <%@include file="/WEB-INF/jspf/easyuiLocal.jspf"%>
+        <%@include file="/WEB-INF/jspf/boostrap.jspf"%>
         <%@include file="/WEB-INF/jspf/artDialog.jspf"%>
         <%@include file="/WEB-INF/jspf/ztree.jspf"%>
         <%@include file="/WEB-INF/jspf/GG.jspf"%>
