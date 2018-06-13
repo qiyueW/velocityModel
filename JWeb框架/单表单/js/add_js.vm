@@ -1,0 +1,42 @@
+#set($D='$')##表示美元协定整个项目都表示这个意思
+#set($MyTreeMenuID="divID_Tree_menu_${bean.name_bean}")##放树菜单的div域
+#set($MyFormID="${bean.name_bean}FormID")##表单的ID
+#set($Myid='')##一方的字段值：ID
+#set($Myid_getMethod='')
+#set($Myid_setMethod='')
+##检查1方的 ID
+#foreach($field in ${fields})
+#if($field.t_index=='PRIMARY KEY')
+#set($Myid="${field.c_name}")
+#set($Myid_getMethod="${field.c_method_get}")
+#set($Myid_setMethod="${field.c_method_set}")
+#end
+#end
+//页面文档加载完后-调用此函数。
+//需要初始化的，统一放到此函数来
+function inidoAdd() {
+//    toCreateTree("${MyTreeMenuID}", "${Myid}", "${treeMypid}", "${treeMyname}", "${bean.request_url}${bean.request_url_select}/json.jw", false, function (event, id, treeNode) {
+//        $("#${treeMypid}").val(treeNode.$Myid)
+//        $("#${treeMypid}_mc").textbox('setValue',treeNode.${treeMyname});        
+//    }, true);
+}
+//提交表单
+function submitForm(formid) {
+    var vcheck = $('#'+formid).form('enableValidation').form('validate');
+            if (vcheck) {
+                var data = {}
+                //data.${Myid} = $("#${Myid}").val()##后台生成。所以不需要从表单取值
+                
+#foreach($field in $fields)
+#if($field.tree!='id')
+                data.${field.c_name} = fzFormatZT($("#${field.c_name}").val())//${field.c_remarks}
+#end
+#end
+                easyuiAjax("${bean.request_url}${bean.request_url_add}.jw", data, "请确认保存操作", function () {
+                    $.fn.zTree.getZTreeObj("${MyTreeMenuID}").reAsyncChildNodes(null, "refresh");
+                });
+            }
+}
+function clearForm() {
+    $('#${MyFormID}').form('clear');
+}

@@ -1,37 +1,35 @@
 #set($mytestDEV='//')
+#set($DYH='''')
 #set($MyStyle='')##是否启用了单据状态
 #set($MyStyleName='')##单据状态名
 #set($MyStyle_getMethod='')##单据状态-get方法
 #set($MyStyle_setMethod='')##单据状态-set方法
-#set($treeMyid='')
-#set($treeMyid_getMethod='')
-#set($treeMyid_setMethod='')
-#set($treeMypid='')
-#set($treeMyid_getMethod='')
-#set($treeMyid_setMethod='')
-#set($treeMyname='')
-#set($treeMyname_getMethod='')
-#set($treeMyname_setMethod='')
-#set($MyImgOne='')##图片上传
-#set($MyFileOne='')##文件上传
+#set($MyPXName='')##排序
+#set($MyPX_getMethod='')##排序-get方法
+#set($MyPX_setMethod='')##排序-set方法
+#set($myid='')##1方主键
+#set($myid_getMethod='')
+#set($myid_setMethod='')
+#set($MyImgOne='')
+#set($MyFileOne='')
+#set($MyImportType_Date='')
 #foreach($field in ${fields})
-#if(${field.tree}=='id')
-#set($treeMyid="${field.c_name}")
-#set($treeMyid_getMethod="${field.c_method_get}")
-#set($treeMyid_setMethod="${field.c_method_set}")
-#elseif(${field.tree}=='pid')
-#set($treeMypid="${field.c_name}")
-#set($treeMypid_getMethod="${field.c_method_get}")
-#set($treeMypid_setMethod="${field.c_method_set}")
-#elseif(${field.tree}=='name')
-#set($treeMyname="${field.c_name}")
-#set($treeMyname_getMethod="${field.c_method_get}")
-#set($treeMyname_setMethod="${field.c_method_set}")
+#if($field.c_type=='Date')
+#set($MyImportType_Date="import java.util.Date;")
+#end
+#if(${field.t_index}=='PRIMARY KEY')
+#set($myid="${field.c_name}")
+#set($myid_getMethod="${field.c_method_get}")
+#set($myid_setMethod="${field.c_method_set}")
 #elseif(${field.style}=='true')##是否启用了单据状态
 #set($MyStyle='true')##是
 #set($MyStyleName="${field.c_name}")
 #set($MyStyle_getMethod="${field.c_method_get}")
 #set($MyStyle_setMethod="${field.c_method_set}")
+#elseif(${field.style}=='px')##是否启用排序
+#set($MyPXName="${field.c_name}")
+#set($MyPX_getMethod="${field.c_method_get}")
+#set($MyPX_setMethod="${field.c_method_set}")
 #elseif($field.h_type=='img')##是否有图片上传
 #set($MyImgOne='true')##是
 #elseif($field.h_type=='file')##是否有文件上传
@@ -40,30 +38,35 @@
 #end
 package ${bean.package_hm};
 
+import configuration.Page;
 import system.base.annotation.H;
 import system.base.annotation.M;
 import system.base.annotation.Validate;
 import system.web.JWeb;
 import configuration.MsgVO;
 import java.util.List;
-import system.base.tree.TreeService;
-import system.base.tree.vo.IdPidEnum;
+import configuration.WebConfigModel;
 import configuration.Tool;
 import plugins.easyui.EasyuiService;
+#if($MyImportType_Date!='')$MyImportType_Date#end
 import ${bean.package_bean}.${bean.name_bean};
 import ${bean.package_service}.${bean.name_service};
 
 
 /**
 *1.添加请求路径：${bean.request_url}${bean.request_url_add}.jw <br>
-*2.删除请求路径：${bean.request_url}${bean.request_url_dell}.jw <br>
+*2.删除请求路径（传参：id）：${bean.request_url}${bean.request_url_dell}.jw <br>
 *3.修改 <br>
 *   3.1变更请求路径：${bean.request_url}${bean.request_url_update}.jw <br>
-*   3.2查询请求路径：${bean.request_url}${bean.request_url_update}/select.jw <br>
+*   3.2查询请求路径(通过表头主键id，请求表头数据)：${bean.request_url}${bean.request_url_update}/select.jw <br>
+*   3.3查询请求路径：${bean.request_url}${bean.request_url_update}/select/grid.jw <br>
 *4.查询 <br>
-*   4.1全部请求路径（对象实例）：${bean.request_url}${bean.request_url_select}/selectOne.jw <br>
-*   4.2全部请求路径（JSON格式）：${bean.request_url}${bean.request_url_select}/json.jw <br>
-*   4.3全部请求路径（TreeGRID格式）：${bean.request_url}${bean.request_url_select}/grid.jw <br>
+*   4.1全部请求路径（对象实例。通过主键传参：id）：${bean.request_url}${bean.request_url_select}/selectOne.jw <br>
+*   4.2全部请求路径（分页查询-JSON格式）：${bean.request_url}${bean.request_url_select}/json.jw <br>
+*   4.3全部请求路径（分页查询-GRID格式）：${bean.request_url}${bean.request_url_select}/grid.jw <br>
+*   4.3全部请求路径(通过表体主键id，请求表体一条记录)：${bean.request_url}${bean.request_url_select}/selectOne/body.jw <br>
+*   4.4全部请求路径(修改与查询明细共用。通过表头主键传参pid，请求表体关联的数据)：${bean.request_url}${bean.request_url_select}/selectOne/bodyJSON.jw <br>
+*   4.5全部请求路径(修改与查询明细共用。通过表头主键传参pid，请求表体关联的数据)：${bean.request_url}${bean.request_url_select}/selectOne/bodyGrid.jw <br>
 #if($MyStyleName!='')##表示启用了单据状态管理 <br>
 *5.单据状态管理 <br>
 *   5.1审核请求路径   ：${bean.request_url}${bean.request_url_update}/examine.jw <br>
@@ -95,10 +98,6 @@ public class ${bean.name_hm} {
     @Validate(${bean.package_validate}.${bean.name_validate}.class)
     public void add() {
         ${bean.name_bean} obj = jw.getObject(${bean.name_bean}.class);
-        if (null == obj.${treeMypid_getMethod}()|| obj.${treeMypid_getMethod}().isEmpty()) {
-            obj.${treeMypid_setMethod}("0");
-        }
-        //其他一些预定值设置
         jw.printOne(${bean.name_service}.addOne(obj));
     }
 //===================删除操作=============================    
@@ -117,66 +116,52 @@ public class ${bean.name_hm} {
     @Validate(${bean.package_validate}.${bean.name_validate}.class)
 	public void update() {
 		${bean.name_bean} obj = jw.getObject(${bean.name_bean}.class);
-		if (null == obj.${treeMyid_getMethod}() || obj.${treeMyid_getMethod}().length() != 24)
+		if (null == obj.${myid_getMethod}() || obj.${myid_getMethod}().length() != 24)
 			return;
-		if (null == obj.${treeMypid_getMethod}() || obj.${treeMypid_getMethod}().isEmpty())
-			obj.${treeMypid_setMethod}("0");
-
-		List<${bean.name_bean}> list = ${bean.name_service}.select();
-		int tkey=TreeService.CHECK.getError_FatherIsSon(list, "${treeMyid}", "${treeMypid}", obj.${treeMyid_getMethod}(),obj.${treeMypid_getMethod}()).key;
-		
-        if (tkey == IdPidEnum.ERROR_FatherIsYourSelft.key) {
-            jw.printOne(MsgVO.setError("修改失败:自己是自己的上级!"));
-            return;
-        }
-        if (tkey == IdPidEnum.ERROR_FatherIsYourSon.key) {
-            jw.printOne(MsgVO.setError("修改失败:自己的子级是自己的上级!"));
-            return;
-        }
         jw.printOne(${bean.name_service}.update(obj));
 	}
     $mytestDEV@system.web.power.ann.SQ("${bean.power_update}")
     @M("${bean.request_url_update}/select")
-	public void updateSelect() {
-		String id = jw.getString("id");
-		${bean.name_bean} obj = ${bean.name_service}.selectOne(id);
-		if (null == obj.${treeMyid_getMethod}())
-			return;
-		jw.request.setAttribute("${bean.name_bean}", obj);
-        jw.request.setAttribute("fl_P", ${bean.name_service}.selectOne(obj.${treeMypid_getMethod}()));
-		jw.forward("/${bean.path_userpage_admin}/${bean.page_name_update}.jsp");
-	}
-//===================查询操作============================= 
+    public void updateSelect() {
+        String id = jw.getString("id");
+        ${bean.name_bean} obj =  ${bean.name_service}.selectOne(id);
+        if (null == obj.${myid_getMethod}()) {
+            return;
+        }
+        jw.request.setAttribute("${bean.name_bean}", obj);
+        jw.forward("/${bean.path_userpage_admin}/edit.jsp");
+    }
+//===================查询操作=============================
+    //=========表头查询操作===========
+
    $mytestDEV@system.web.power.ann.SQ("${bean.power_select}") 
-    @M("${bean.request_url_select}/selectOne")
+    @M("${bean.request_url_select}/selectOne")//针对表头的查询-一条记录的明细
 	public void selectOne() {
 		String id = jw.getString("id");
 		${bean.name_bean} obj = ${bean.name_service}.selectOne(id);
-		if (null == obj.${treeMyid_getMethod}())
+		if (null == obj.${myid_getMethod}())
 			return;
 		jw.request.setAttribute("${bean.name_bean}", obj);
-        jw.request.setAttribute("fl_P", ${bean.name_service}.selectOne(obj.${treeMypid_getMethod}()));
 		jw.forward("/${bean.path_userpage_admin}/one.jsp");
 	}
 
    $mytestDEV@system.web.power.ann.SQ("${bean.power_select}")
-    @M("${bean.request_url_select}/json")
-    public static void select(JWeb jw) {
-    // jw.printOne(Tool.entityToJSON(DBO.service.S.select(LoufangFL.class, "order by loufangfl_px ASC"))); 如果有排序的话，将loufangfl_px字段替换为你的项目中的字段
-        jw.printOne(Tool.entityToJSON(${bean.name_service}.select()).replace("\n", "/n"));
-    }
-   $mytestDEV@system.web.power.ann.SQ("${bean.power_select}")
-    @M("${bean.request_url_select}/json2")
-    public static void select2(JWeb jw) {
-        jw.printOne(EasyuiService.formatTree(${bean.name_service}.select(), "${treeMyid}", "${treeMypid}", "${treeMyname}").replace("\n", "/n"));
+    @M("${bean.request_url_select}/json")//针对表头的查询-返回json数据
+    public static void selectJSON(JWeb jw) {
+        String condition = wx.xt.service.XTTiaojianService.openConditionByReturnWhere_key(jw);
+        Page page = EasyuiService.getPageAndOrderby(jw);
+        jw.printOne(Tool.entityToJSON(${bean.name_service}.select(page.getPage(), page.getRows(), condition, page.getOrderBy())));
     }
 
-    $mytestDEV@system.web.power.ann.SQ("${bean.power_select}")
-    @M("${bean.request_url_select}/grid")
-    public static void selectUI(JWeb jw) {//_UIGrid
-    //如果有某个字段要进行排序,例 以主键=。=
+   $mytestDEV@system.web.power.ann.SQ("${bean.power_select}")
+    @M("${bean.request_url_select}/grid")//针对表头的查询-返回Grid数据
+    public static void selectGrid(JWeb jw) {
         String condition = wx.xt.service.XTTiaojianService.openConditionByReturnWhere_key(jw);
-        jw.printOne(EasyuiService.formatTreeGrid(${bean.name_service}.select(condition), "${treeMyid}", "${treeMypid}", "${treeMyname}").replace("\n", "/n"));
+        Page page = EasyuiService.getPageAndOrderby(jw);
+        jw.printOne(EasyuiService.formatGrid(
+            ${bean.name_service}.select(page.getPage(), page.getRows(), condition, page.getOrderBy()),
+            ${bean.name_service}.selectCount(condition))
+        );
     }
 #if($MyStyleName!='')##表示启用了单据状态管理
 //---------------------------------------单据状态管理---------------------------------------

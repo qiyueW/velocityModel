@@ -29,9 +29,6 @@
 #set($myid='')##1方主键
 #set($myid_getMethod='')
 #set($myid_setMethod='')
-#set($myid2='')##多方主键
-#set($myid2_getMethod='')
-#set($myid2_setMethod='')
 #set($MyImgOne='')
 #set($MyFileOne='')
 #set($MyImportType_Date='')
@@ -58,13 +55,6 @@
 #set($MyFileOne='true')##是
 #end
 #end
-#foreach($field in ${fields1})
-#if(${field.t_index}=='PRIMARY KEY')
-#set($myid2="${field.c_name}")
-#set($myid2_getMethod="${field.c_method_get}")
-#set($myid2_setMethod="${field.c_method_set}")
-#end
-#end
 function f_gridMenu(e, rowIndex, rowData) {         //右击事件
     $('#menu').menu('show', {
         left: e.pageX, //弹出窗口的方位坐标
@@ -84,7 +74,7 @@ function dellRow() {
         return;
     }
 #end
-    easyuiAjax("${MyRequest_Dell}", {id: rows[0].${treeMyid}}, "请确认删除操作", function () {
+    easyuiAjax("${MyRequest_Dell}", {id: rows[0].${myid}}, "请确认删除操作", function () {
         easyuiGridReload('dg')
     });
 }
@@ -100,7 +90,7 @@ function updateRow() {
         return;
     }
 #end
-    easyuiLoadWindowByURL('showUpdatePage', '修改', '${MyRequest_Edit_Select}?id=' + rows[0].${treeMyid});
+    easyuiLoadWindowByURL('showUpdatePage', '修改', '${MyRequest_Edit_Select}?id=' + rows[0].${myid});
 }
 
 function seeRow() {
@@ -109,7 +99,7 @@ function seeRow() {
         $.messager.alert('提示', '请选择行');
         return;
     }
-    easyuiLoadWindowByURL('showSeeOnePage', '明细', '${MyRequest_Select_One}?id=' + rows[0].${treeMyid});
+    easyuiLoadWindowByURL('showSeeOnePage', '明细', '${MyRequest_Select_One}?id=' + rows[0].${myid});
 }
 
 #if($MyStyleName!='')##表示启用了单据状态管理
@@ -120,7 +110,7 @@ function update01() {//审核
         $.messager.alert('提示', '请选择行');
         return;
     }
-    easyuiAjax("${MyRequest_Edit_Examine}", {ids: easyuiGetRowsID(rows, '${treeMyid}')}, "请确认审核操作", function () {
+    easyuiAjax("${MyRequest_Edit_Examine}", {ids: easyuiGetRowsID(rows, '${myid}')}, "请确认审核操作", function () {
         easyuiGridReload('dg')
     });
 }
@@ -130,7 +120,7 @@ function update10() {//反审核
         $.messager.alert('提示', '请选择行');
         return;
     }
-    easyuiAjax("${MyRequest_Edit_Unexamine}", {ids: easyuiGetRowsID(rows, '${treeMyid}')}, "请确认反审核操作", function () {
+    easyuiAjax("${MyRequest_Edit_Unexamine}", {ids: easyuiGetRowsID(rows, '${myid}')}, "请确认反审核操作", function () {
         easyuiGridReload('dg')
     });
 }
@@ -140,7 +130,7 @@ function update04() {//作废
         $.messager.alert('提示', '请选择行');
         return;
     }
-    easyuiAjax("${MyRequest_Edit_Void}", {ids: easyuiGetRowsID(rows, '${treeMyid}')}, "请确认作废操作", function () {
+    easyuiAjax("${MyRequest_Edit_Void}", {ids: easyuiGetRowsID(rows, '${myid}')}, "请确认作废操作", function () {
         easyuiGridReload('dg')
     });
 }
@@ -150,7 +140,7 @@ function update40() {//反作废
         $.messager.alert('提示', '请选择行');
         return;
     }
-    easyuiAjax("${MyRequest_Edit_Unvoid}", {ids: easyuiGetRowsID(rows, '${treeMyid}')}, "请确认反作废操作", function () {
+    easyuiAjax("${MyRequest_Edit_Unvoid}", {ids: easyuiGetRowsID(rows, '${myid}')}, "请确认反作废操作", function () {
         easyuiGridReload('dg')
     });
 }
@@ -176,7 +166,7 @@ function f_closeCondition() {
 }
 function f_queryByCondition(jsonData) {
     $('#showConditionPage').panel('close');
-    var queryParams = $('#dg').treegrid('options').queryParams;
+    var queryParams = $('#dg').datagrid('options').queryParams;
     queryParams.key =jsonData;
-    $('#dg').treegrid('reload');
+    $('#dg').datagrid('reload');
 }

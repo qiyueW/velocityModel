@@ -161,14 +161,14 @@ public class ${bean.name_hm} {
    $mytestDEV@system.web.power.ann.SQ("${bean.power_select}")
     @M("${bean.request_url_select}/json")//针对表头的查询-返回json数据
     public static void selectJSON(JWeb jw) {
-        String condition = "";
+        String condition = wx.xt.service.XTTiaojianService.openConditionByReturnWhere_key(jw);
         Page page = EasyuiService.getPageAndOrderby(jw);
         jw.printOne(Tool.entityToJSON(${bean.name_service}.select(page.getPage(), page.getRows(), condition, page.getOrderBy())));
     }
    $mytestDEV@system.web.power.ann.SQ("${bean.power_select}")
     @M("${bean.request_url_select}/grid")//针对表头的查询-返回Grid数据
     public static void selectGrid(JWeb jw) {
-        String condition = "";
+        String condition = wx.xt.service.XTTiaojianService.openConditionByReturnWhere_key(jw);
         Page page = EasyuiService.getPageAndOrderby(jw);
         jw.printOne(EasyuiService.formatGrid(
             ${bean.name_service}.select(page.getPage(), page.getRows(), condition, page.getOrderBy()),

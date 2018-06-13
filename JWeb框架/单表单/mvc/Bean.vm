@@ -1,0 +1,66 @@
+package ${bean.package_bean};
+
+import configuration.Tool;
+#foreach($field in $fields)
+    #if($field.c_type=='Date')
+import java.util.Date;
+    #break
+    #end
+#end
+
+@system.base.annotation.Table
+public class ${bean.name_bean} {
+
+#foreach($field in $fields)
+ #if($field.t_index=='PRIMARY KEY')
+    @system.base.annotation.ID
+    $field.c_scope  $field.c_type $field.c_name ;// $field.c_remarks
+ #elseif($field.c_type=='Date')
+    @system.base.annotation.Time("$field.c_dateformat")
+    $field.c_scope  $field.c_type $field.c_name ;// $field.c_remarks
+ #else
+    $field.c_scope  $field.c_type $field.c_name ;// $field.c_remarks 
+ #end
+#end
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+#foreach($field in $fields)
+#if($field.c_type=='Date'||$field.c_type=='java.util.Date')
+#set($fieldvalue="Tool.dateToString(this.$field.c_name, ""$field.c_dateformat"")")
+#else
+#set($fieldvalue="$field.c_name")
+#end
+#if($foreach.count ==1)
+        sb.append("{\"$field.c_name\":\"").append($fieldvalue).append("\"")
+#elseif($foreach.count != $fields.size())
+                .append(",\"$field.c_name\":\"").append($fieldvalue).append("\"")
+#else
+                .append(",\"$field.c_name\":\"").append($fieldvalue).append("\"}")
+#end
+#end
+                ;
+        return sb.toString();
+    }
+
+#foreach($field in $fields)
+    /**
+     * 设置 $field.c_remarks
+     *
+     * @param $field.c_name $field.c_type
+     */
+    public void ${field.c_method_set}(${field.c_type} ${field.c_name}) {
+        this.${field.c_name}=${field.c_name};
+    }
+
+    /**
+     * 取得 $field.c_remarks
+     *
+     * @return $field.c_type
+     */
+    public ${field.c_type} ${field.c_method_get}() {
+        return this.${field.c_name};
+    }
+#end
+}
