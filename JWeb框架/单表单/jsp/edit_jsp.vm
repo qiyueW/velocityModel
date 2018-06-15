@@ -96,13 +96,20 @@
 #end
 
 <div class="container"  id="${MyFormID}">
+                <div class="row-fluid">
+                    <div class="span12">
+                        <a href="javascript:void(0)" class="btn btn-default btn-large" onclick="clearFather()">清空上级</a>
+                        <a href="javascript:void(0)" class="btn btn-primary btn-large" onclick="submitForm('XtGuanliyuanFormID')">保存修改</a>
+                        <a href="javascript:void(0)" class="btn btn-default btn-large" onclick="closeMySelf()">关闭</a>
+                    </div>
+                </div>
 #set($mustcheck='')
 #foreach($field in $fields)
 #if($field.tree!='id'&&$field.tree!='pid'&&$field.v_check!=''&&$field.h_hidden!='true'&&$field.style!='true')
 #if($field.v_check!='')##开始：是否执行查检
- #set($mustcheck="required:${field.v_check}")
+#set($mustcheck="required:${field.v_check}")
 #else
-  #set($mustcheck="required:false")
+#set($mustcheck="required:false")
 #end##结束：是否执行查检
 #if($field.h_hidden!='true')## 非主键类的
 #if($field.c_dateformat!='')##日期或时间
@@ -142,7 +149,6 @@
 #end
 #end
 #end
-                    </form>
                 </div>
             </div>
         </div>

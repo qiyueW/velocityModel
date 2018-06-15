@@ -98,6 +98,7 @@
             <div id="${MyTreeMenuID}" class="ztree">bean</div>
         </div>
         <div data-options="region:'center'" id='centerMain'>
+<div class="container"  id="${MyFormID}">
 #foreach($field in $fields)
 #if($field.h_hidden=='true')##是否主键类的字段
                     <input type="hidden" id="${field.c_name}" name="${field.c_name}" value="">
@@ -105,8 +106,6 @@
                     <input type="hidden" id="${field.c_name}" name="${field.c_name}" value="0">
 #end
 #end
-
-<div class="container"  id="${MyFormID}">
                 <div class="row-fluid">
                     <div class="span12">
                         <a href="javascript:void(0)" class="btn btn-default btn-large" onclick="clearForm()">清空</a>
