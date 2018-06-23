@@ -85,7 +85,7 @@
             </div>
 #if($MyStyle=='true')
             <div>
-                <select onchange="$('#dg').treegrid({singleSelect: (this.value == 0)});
+                <select onchange="$('#dg').datagrid({singleSelect: (this.value == 0)});
                         pageCN('dg', 100)">
                     <option value="0">单行选择</option>
                     <option value="1">多行选择</option>
