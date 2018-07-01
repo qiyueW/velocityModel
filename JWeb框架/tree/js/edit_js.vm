@@ -10,19 +10,19 @@
 #set($treeMyname_getMethod='')
 #set($treeMyname_setMethod='')
 #foreach($field in ${fields})
-    #if(${field.tree}=='id')
-        #set($treeMyid="${field.c_name}")
-        #set($treeMyid_getMethod="${field.c_method_get}")
-        #set($treeMyid_setMethod="${field.c_method_set}")
-    #elseif(${field.tree}=='pid')
-        #set($treeMypid="${field.c_name}")
-        #set($treeMypid_getMethod="${field.c_method_get}")
-        #set($treeMypid_setMethod="${field.c_method_set}")
-    #elseif(${field.tree}=='name')
-        #set($treeMyname="${field.c_name}")
-        #set($treeMyname_getMethod="${field.c_method_get}")
-        #set($treeMyname_setMethod="${field.c_method_set}")
-    #end
+#if(${field.tree}=='id')
+#set($treeMyid="${field.c_name}")
+#set($treeMyid_getMethod="${field.c_method_get}")
+#set($treeMyid_setMethod="${field.c_method_set}")
+#elseif(${field.tree}=='pid')
+#set($treeMypid="${field.c_name}")
+#set($treeMypid_getMethod="${field.c_method_get}")
+#set($treeMypid_setMethod="${field.c_method_set}")
+#elseif(${field.tree}=='name')
+#set($treeMyname="${field.c_name}")
+#set($treeMyname_getMethod="${field.c_method_get}")
+#set($treeMyname_setMethod="${field.c_method_set}")
+#end
 #end
 //页面文档加载完后-调用此函数。
 //需要初始化的，统一放到此函数来

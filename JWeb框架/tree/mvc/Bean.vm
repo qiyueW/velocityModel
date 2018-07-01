@@ -2,25 +2,25 @@ package ${bean.package_bean};
 
 import configuration.Tool;
 #foreach($field in $fields)
-    #if($field.c_type=='Date')
+#if($field.c_type=='Date')
 import java.util.Date;
-    #break
-    #end
+#break
+#end
 #end
 
 @system.base.annotation.Table
 public class ${bean.name_bean} {
 
 #foreach($field in $fields)
- #if($field.t_index=='PRIMARY KEY')
+#if($field.t_index=='PRIMARY KEY')
     @system.base.annotation.ID
     $field.c_scope  $field.c_type $field.c_name ;// $field.c_remarks
- #elseif($field.c_type=='Date')
+#elseif($field.c_type=='Date')
     @system.base.annotation.Time("$field.c_dateformat")
     $field.c_scope  $field.c_type $field.c_name ;// $field.c_remarks
- #else
+#else
     $field.c_scope  $field.c_type $field.c_name ;// $field.c_remarks 
- #end
+#end
 #end
 
     @Override
