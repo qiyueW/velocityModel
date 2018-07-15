@@ -9,6 +9,9 @@
 #set($MyStyleName='')##单据状态名
 #set($MyStyle_getMethod='')##单据状态-get方法
 #set($MyStyle_setMethod='')##单据状态-set方法
+#set($MyIsolationName='')##隔离标识
+#set($MyIsolation_getMethod='')##隔离标识-get方法
+#set($MyIsolation_setMethod='')##隔离标识-set方法
 #set($MyPXName='')##排序
 #set($MyPX_getMethod='')##排序-get方法
 #set($MyPX_setMethod='')##排序-set方法
@@ -34,6 +37,10 @@
 #set($MyStyleName="${field.c_name}")
 #set($MyStyle_getMethod="${field.c_method_get}")
 #set($MyStyle_setMethod="${field.c_method_set}")
+#elseif(${field.style}=='isolation')##是否启用隔离标识
+#set($MyIsolationName="${field.c_name}")
+#set($MyIsolation_getMethod="${field.c_method_get}")
+#set($MyIsolation_setMethod="${field.c_method_set}")
 #elseif(${field.style}=='px')##是否启用排序
 #set($MyPXName="${field.c_name}")
 #set($MyPX_getMethod="${field.c_method_get}")
@@ -58,15 +65,13 @@
 <html>
     <head>
         <title>维护${bean.bean_bz}</title>
-        <script type="text/javascript" src="${NyJSFilePath_List}"></script>
         <%@include file="/WEB-INF/jspf/easyuiLocal.jspf"%>
-        <%@include file="/WEB-INF/jspf/artDialog.jspf"%>
         <%@include file="/WEB-INF/jspf/ztree.jspf"%>
-        <%@include file="/WEB-INF/jspf/GG.jspf"%>
+        <script type="text/javascript" src="${NyJSFilePath_List}"></script>        
         <script>
             $D(function (){
 #foreach($field in $fields)
-#if($field.h_hidden=='true')
+#if($field.h_hidden=='true'||$field.style=='isolation')
                 $D('#dg').datagrid('hideColumn', '${field.c_name}');
 #end
 #end
@@ -90,7 +95,7 @@
                 <tr>
                     <th data-options="field:'ck',checkbox:true"></th>
 #foreach($field in $fields)
-#if($field.h_hidden=='true')
+#if($field.h_hidden=='true'||$field.style=='isolation')
                     <th data-options="field:'${field.c_name}'">${field.c_remarks}</th>
 #elseif($field.c_dateformat!='')##日期或时间
                     <th data-options="field:'${field.c_name}',width:130"><div>${field.c_remarks}</div></th>

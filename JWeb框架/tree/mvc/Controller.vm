@@ -121,6 +121,11 @@ public class ${bean.name_hm} {
         if (null == id || id.length() != 24) {
             return;
         }
+#if($MyIsolationName!='')
+        if (${bean.name_service}.isErrorGelibiaoshiOne(id, Gelibiaoshi.getGelibiaoshi(jw))) {//存在别人家的隔离标识的单据
+            return;
+        }
+#end
         jw.printOne(${bean.name_service}.dellOne(id));
     }
 //===================修改操作=============================    
@@ -134,7 +139,7 @@ public class ${bean.name_hm} {
 		if (null == obj.${treeMypid_getMethod}() || obj.${treeMypid_getMethod}().isEmpty())
 			obj.${treeMypid_setMethod}("0");
 #if($MyIsolationName!='')
-        if (${bean.name_service}.isErrorGelibiaoshiOne(obj.${treeMyid_getMethod}(), Gelibiaoshi.getGelibiaoshi(jw))) {//存在别人家的隔离标识的单据
+        if (${bean.name_service}.isErrorGelibiaoshiOne(obj, Gelibiaoshi.getGelibiaoshi(jw))) {//存在别人家的隔离标识的单据
             return;
         }
 #end
@@ -155,14 +160,14 @@ public class ${bean.name_hm} {
     @M("${bean.request_url_update}/select")
 	public void updateSelect() {
 		String id = jw.getString("id");
-#if($MyIsolationName!='')
-        if (${bean.name_service}.isErrorGelibiaoshiOne(id, Gelibiaoshi.getGelibiaoshi(jw))) {//存在别人家的隔离标识的单据
-            return;
-        }
-#end
 		${bean.name_bean} obj = ${bean.name_service}.selectOne(id);
 		if (null == obj.${treeMyid_getMethod}())
 			return;
+#if($MyIsolationName!='')
+        if (${bean.name_service}.isErrorGelibiaoshiOne(obj, Gelibiaoshi.getGelibiaoshi(jw))) {//存在别人家的隔离标识的单据
+            return;
+        }
+#end
 		jw.request.setAttribute("${bean.name_bean}", obj);
         jw.request.setAttribute("fl_P", ${bean.name_service}.selectOne(obj.${treeMypid_getMethod}()));
 		jw.forward("/${bean.path_userpage_admin}/${bean.page_name_update}.jsp");
@@ -172,14 +177,14 @@ public class ${bean.name_hm} {
     @M("${bean.request_url_select}/selectOne")
 	public void selectOne() {
 		String id = jw.getString("id");
-#if($MyIsolationName!='')
-        if (${bean.name_service}.isErrorGelibiaoshiOne(id, Gelibiaoshi.getGelibiaoshi(jw))) {//存在别人家的隔离标识的单据
-            return;
-        }
-#end
 		${bean.name_bean} obj = ${bean.name_service}.selectOne(id);
 		if (null == obj.${treeMyid_getMethod}())
 			return;
+#if($MyIsolationName!='')
+        if (${bean.name_service}.isErrorGelibiaoshiOne(obj, Gelibiaoshi.getGelibiaoshi(jw))) {//存在别人家的隔离标识的单据
+            return;
+        }
+#end
 		jw.request.setAttribute("${bean.name_bean}", obj);
         jw.request.setAttribute("fl_P", ${bean.name_service}.selectOne(obj.${treeMypid_getMethod}()));
 		jw.forward("/${bean.path_userpage_admin}/one.jsp");
@@ -249,8 +254,8 @@ public class ${bean.name_hm} {
 #end
         jw.printOne(${bean.name_service}.updateStyle_unVoid(ids));
     }
-#end
 
+#end
 #if($MyFileOne!=''||$MyImgOne!='')
 //---------------------------------------文件图片管理---------------------------------------
 #if($MyImgOne!='')

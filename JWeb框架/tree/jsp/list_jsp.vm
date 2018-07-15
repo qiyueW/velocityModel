@@ -52,7 +52,7 @@
         <script>
             $D(function (){
 #foreach($field in $fields)
-#if($field.h_hidden=='true')
+#if($field.h_hidden=='true'||$field.style=='isolation')
                 $D('#dg').treegrid('hideColumn', '${field.c_name}');
 #end
 #end

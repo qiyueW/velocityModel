@@ -4,6 +4,9 @@
 #set($MyStyleName='')##单据状态名
 #set($MyStyle_getMethod='')##单据状态-get方法
 #set($MyStyle_setMethod='')##单据状态-set方法
+#set($MyIsolationName='')##隔离标识
+#set($MyIsolation_getMethod='')##隔离标识-get方法
+#set($MyIsolation_setMethod='')##隔离标识-set方法
 #set($MyPXName='')##排序
 #set($MyPX_getMethod='')##排序-get方法
 #set($MyPX_setMethod='')##排序-set方法
@@ -29,6 +32,10 @@
 #set($MyStyleName="${field.c_name}")
 #set($MyStyle_getMethod="${field.c_method_get}")
 #set($MyStyle_setMethod="${field.c_method_set}")
+#elseif(${field.style}=='isolation')##是否启用隔离标识
+#set($MyIsolationName="${field.c_name}")
+#set($MyIsolation_getMethod="${field.c_method_get}")
+#set($MyIsolation_setMethod="${field.c_method_set}")
 #elseif(${field.style}=='px')##是否启用排序
 #set($MyPXName="${field.c_name}")
 #set($MyPX_getMethod="${field.c_method_get}")
@@ -62,7 +69,9 @@ import plugins.easyui.EasyuiService;
 import ${bean.package_bean}.${bean.name_bean};
 import ${bean1.package_bean}.${bean1.name_bean};
 import ${bean.package_service}.${bean.name_service};
-
+#if($MyIsolationName!='')
+import wx.xt.Gelibiaoshi;
+#end
 
 /**
 *1.添加请求路径：${bean.request_url}${bean.request_url_add}.jw <br>
@@ -120,6 +129,11 @@ public class ${bean.name_hm} {
         if (null == id || id.length() < 24) {
             return;
         }
+#if($MyIsolationName!='')
+        if (${bean.name_service}.isErrorGelibiaoshiOne(id, Gelibiaoshi.getGelibiaoshi(jw))) {//存在别人家的隔离标识的单据
+            return;
+        }
+#end
         jw.printOne(${bean.name_service}.dellVast(id));
     }
 //===================修改操作=============================    
@@ -128,6 +142,14 @@ public class ${bean.name_hm} {
     @Validate({${bean.package_validate}.${bean.name_validate}.class,${bean1.package_validate}.${bean1.name_validate}.class})
 	public void update() {
 		${bean.name_bean} obj = jw.getObject(${bean.name_bean}.class);
+        if (null == obj ||null==obj.${myid_getMethod}()|| obj.${myid_getMethod}().length() != 24) {
+            return;
+        }
+#if($MyIsolationName!='')
+        if (${bean.name_service}.isErrorGelibiaoshiOne(obj, Gelibiaoshi.getGelibiaoshi(jw))) {//存在别人家的隔离标识的单据
+            return;
+        }
+#end
         List<${bean1.name_bean}> obj2 = (List<${bean1.name_bean}>) jw.request.getAttribute(WebConfigModel.JSONKEY);
         for (${bean1.name_bean} o2 : obj2) {
             o2.${myid_setMethod}(obj.${myid_getMethod}());//锁定表头主键
@@ -141,6 +163,11 @@ public class ${bean.name_hm} {
 		${bean.name_bean} obj = ${bean.name_service}.selectOne(id);
 		if (null == obj.${myid_getMethod}())
 			return;
+#if($MyIsolationName!='')
+        if (${bean.name_service}.isErrorGelibiaoshiOne(obj, Gelibiaoshi.getGelibiaoshi(jw))) {//存在别人家的隔离标识的单据
+            return;
+        }
+#end
 		jw.request.setAttribute("${bean.name_bean}", obj);
 		jw.forward("/${bean.path_userpage_admin}/${bean.page_name_update}.jsp");
 	}
@@ -154,6 +181,11 @@ public class ${bean.name_hm} {
 		${bean.name_bean} obj = ${bean.name_service}.selectOne(id);
 		if (null == obj.${myid_getMethod}())
 			return;
+#if($MyIsolationName!='')
+        if (${bean.name_service}.isErrorGelibiaoshiOne(obj, Gelibiaoshi.getGelibiaoshi(jw))) {//存在别人家的隔离标识的单据
+            return;
+        }
+#end
 		jw.request.setAttribute("${bean.name_bean}", obj);
 		jw.forward("/${bean.path_userpage_admin}/one.jsp");
 	}
@@ -161,14 +193,14 @@ public class ${bean.name_hm} {
    $mytestDEV@system.web.power.ann.SQ("${bean.power_select}")
     @M("${bean.request_url_select}/json")//针对表头的查询-返回json数据
     public static void selectJSON(JWeb jw) {
-        String condition = wx.xt.service.XTTiaojianService.openConditionByReturnWhere_key(jw);
+        String condition = wx.xt.service.XTTiaojianService.openConditionByReturnWhere_key(jw#if($MyIsolationName!=''), "${MyIsolationName}", Gelibiaoshi.getGelibiaoshi(jw)#end);
         Page page = EasyuiService.getPageAndOrderby(jw);
         jw.printOne(Tool.entityToJSON(${bean.name_service}.select(page.getPage(), page.getRows(), condition, page.getOrderBy())));
     }
    $mytestDEV@system.web.power.ann.SQ("${bean.power_select}")
     @M("${bean.request_url_select}/grid")//针对表头的查询-返回Grid数据
     public static void selectGrid(JWeb jw) {
-        String condition = wx.xt.service.XTTiaojianService.openConditionByReturnWhere_key(jw);
+        String condition = wx.xt.service.XTTiaojianService.openConditionByReturnWhere_key(jw#if($MyIsolationName!=''), "${MyIsolationName}", Gelibiaoshi.getGelibiaoshi(jw)#end);
         Page page = EasyuiService.getPageAndOrderby(jw);
         jw.printOne(EasyuiService.formatGrid(
             ${bean.name_service}.select(page.getPage(), page.getRows(), condition, page.getOrderBy()),
@@ -192,12 +224,28 @@ public class ${bean.name_hm} {
     @M("${bean.request_url_select}/selectOne/bodyJSON")
 	public void selectOneBodyJSON() {//针对表体的查询
 		String id = jw.getString("pid");
+        if (null == id || id.length() < 24) {
+            return;
+        }
+#if($MyIsolationName!='')
+        if (${bean.name_service}.isErrorGelibiaoshiOne(id, Gelibiaoshi.getGelibiaoshi(jw))) {//存在别人家的隔离标识的单据
+            return;
+        }
+#end
 		jw.printOne(Tool.entityToJSON(${bean.name_service}.select2(id)));
 	}    
     $mytestDEV@system.web.power.ann.SQ("${bean.power_update}")
     @M("${bean.request_url_select}/selectOne/bodyGrid")
 	public void selectOneBodyGrid() {//针对表体的查询
 		String id = jw.getString("pid");
+        if (null == id || id.length() < 24) {
+            return;
+        }
+#if($MyIsolationName!='')
+        if (${bean.name_service}.isErrorGelibiaoshiOne(id, Gelibiaoshi.getGelibiaoshi(jw))) {//存在别人家的隔离标识的单据
+            return;
+        }
+#end
 		jw.printOne(EasyuiService.formatGrid(${bean.name_service}.select2(id)));
 	}
     
@@ -205,23 +253,48 @@ public class ${bean.name_hm} {
 //---------------------------------------单据状态管理---------------------------------------
     @M("${bean.request_url_update}/examine")//审核单据
     public void examine() {
-        jw.printOne(${bean.name_service}.updateStyle_examine(jw.getString("ids")));
+        String ids = jw.getString("ids");
+#if($MyIsolationName!='')
+        if (${bean.name_service}.isErrorGelibiaoshiVast(ids, Gelibiaoshi.getGelibiaoshi(jw))) {//存在别人家的隔离标识的单据
+            return;
+        }
+#end
+        jw.printOne(${bean.name_service}.updateStyle_examine(ids));
     }
 
     @M("${bean.request_url_update}/unexamine")//反审核
     public void unexamine() {
-        jw.printOne(${bean.name_service}.updateStyle_unExamine(jw.getString("ids")));
+        String ids = jw.getString("ids");
+#if($MyIsolationName!='')
+        if (${bean.name_service}.isErrorGelibiaoshiVast(ids, Gelibiaoshi.getGelibiaoshi(jw))) {//存在别人家的隔离标识的单据
+            return;
+        }
+#end
+        jw.printOne(${bean.name_service}.updateStyle_unExamine(ids));
     }
 
     @M("${bean.request_url_update}/void")//作废
     public void tovoid() {
-        jw.printOne(${bean.name_service}.updateStyle_void(jw.getString("ids")));
+        String ids = jw.getString("ids");
+#if($MyIsolationName!='')
+        if (${bean.name_service}.isErrorGelibiaoshiVast(ids, Gelibiaoshi.getGelibiaoshi(jw))) {//存在别人家的隔离标识的单据
+            return;
+        }
+#end
+        jw.printOne(${bean.name_service}.updateStyle_void(ids));
     }
 
     @M("${bean.request_url_update}/unvoid")//反作废
     public void untovoid() {
-        jw.printOne(${bean.name_service}.updateStyle_unVoid(jw.getString("ids")));
+        String ids = jw.getString("ids");
+#if($MyIsolationName!='')
+        if (${bean.name_service}.isErrorGelibiaoshiVast(ids, Gelibiaoshi.getGelibiaoshi(jw))) {//存在别人家的隔离标识的单据
+            return;
+        }
+#end
+        jw.printOne(${bean.name_service}.updateStyle_unVoid(ids));
     }
+
 #end
 
 #if($MyFileOne!=''||$MyImgOne!='')

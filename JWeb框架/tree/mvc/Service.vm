@@ -68,6 +68,14 @@ import ${bean.package_bean}.${bean.name_bean};
  * @author wo
  */
 final public class ${bean.name_service} {
+#if($MyStyleName!='')
+    private static final String TABLE1 = "${bean.name_bean}";
+    private static final String PK1 = "${treeMyid}";
+    private static final String STYLE1 = "${MyStyleName}";
+#end
+#if($MyIsolationName!='')
+    private static final String GE_LI_BIAO_SHI = "${MyIsolationName}";
+#end
 //---------------------------------------查询---------------------------------------
 
     /**
@@ -96,18 +104,6 @@ final public class ${bean.name_service} {
     public static ${bean.name_bean} selectOne(String id) {
         return DBO.service.S.selectOneByID(${bean.name_bean}.class, id);
     }
-#if($MyIsolationName!='')
-//---------------------------------------隔离标识管理--------------------------------------
-    public static boolean isErrorGelibiaoshiVast(String ids, String gelibiaoshi) {
-        List<${bean.name_bean}> list = DBO.service.S.selectByCondition(${bean.name_bean}.class, "WHERE ${treeMyid} IN(" + configuration.Tool.replaceDToDDD(ids) + ")");
-        return BaseService.isErrorGelibiaoshiVast(list, "${MyIsolationName}", gelibiaoshi);
-    }
-
-    public static boolean isErrorGelibiaoshiOne(String id, String gelibiaoshi) {
-        ${bean.name_bean} obj = DBO.service.S.selectOneByID(${bean.name_bean}.class, id);
-        return BaseService.isErrorGelibiaoshiOne(obj, "${MyIsolationName}", gelibiaoshi);
-    }
-#end
 //---------------------------------------增删改--------------------------------------
 
     /**
@@ -206,6 +202,15 @@ final public class ${bean.name_service} {
 #end
 #end
 #end
+#if($MyIsolationName!='')
+#if($MyRejectStr!='')
+#set($MyRejectStrValue="隔离标识,$MyRejectStrValue")
+#set($MyRejectStr="$MyIsolationName,$MyRejectStr")
+#else
+#set($MyRejectStrValue="隔离标识")
+#set($MyRejectStr="$MyIsolationName")
+#end
+#end
 #if($MyStyleName!=''||$MyRejectStr!='')
 #if($MyStyleName!='')
         if (selectOne(obj.${treeMyid_getMethod}()).${MyStyle_getMethod}() != BaseService.XINZENG) {
@@ -229,7 +234,7 @@ final public class ${bean.name_service} {
      * @return
      */
     public static MsgVO updateStyle_examine(String ids) {
-        return BaseService.updateStyle_examine(ids, "${bean.name_bean}", "${treeMyid}", "${MyStyleName}");
+        return BaseService.updateStyle_examine(ids, TABLE1, PK1, STYLE1);
     }
 
     /**
@@ -239,7 +244,7 @@ final public class ${bean.name_service} {
      * @return
      */
     public static MsgVO updateStyle_unExamine(String ids) {
-        return BaseService.updateStyle_unExamine(ids, "${bean.name_bean}", "${treeMyid}", "${MyStyleName}");
+        return BaseService.updateStyle_unExamine(ids, TABLE1, PK1, STYLE1);
     }
 
     /**
@@ -249,7 +254,7 @@ final public class ${bean.name_service} {
      * @return
      */
     public static MsgVO updateStyle_void(String ids) {
-        return BaseService.updateStyle_void(ids, "${bean.name_bean}", "${treeMyid}", "${MyStyleName}");
+        return BaseService.updateStyle_void(ids, TABLE1, PK1, STYLE1);
     }
 
     /**
@@ -259,8 +264,27 @@ final public class ${bean.name_service} {
      * @return
      */
     public static MsgVO updateStyle_unVoid(String ids) {
-        return BaseService.updateStyle_unVoid(ids, "${bean.name_bean}", "${treeMyid}", "${MyStyleName}");
+        return BaseService.updateStyle_unVoid(ids,  TABLE1, PK1, STYLE1);
     }
+    
+#end
+#if($MyIsolationName!='')
+//---------------------------------------隔离标识管理--------------------------------------
+    public static boolean isErrorGelibiaoshiVast(String ids, String gelibiaoshi) {
+        List<${bean.name_bean}> list = DBO.service.S.selectByCondition(${bean.name_bean}.class, "WHERE ${treeMyid} IN(" + configuration.Tool.replaceDToDDD(ids) + ")");
+        return BaseService.isErrorGelibiaoshiVast(list, GE_LI_BIAO_SHI, gelibiaoshi);
+    }
+    public static boolean isErrorGelibiaoshiVast(List<${bean.name_bean}> list, String gelibiaoshi) {
+        return BaseService.isErrorGelibiaoshiVast(list, GE_LI_BIAO_SHI, gelibiaoshi);
+    }
+    public static boolean isErrorGelibiaoshiOne(String id, String gelibiaoshi) {
+        ${bean.name_bean} obj = DBO.service.S.selectOneByID(${bean.name_bean}.class, id);
+        return BaseService.isErrorGelibiaoshiOne(obj, GE_LI_BIAO_SHI, gelibiaoshi);
+    }
+    public static boolean isErrorGelibiaoshiOne(${bean.name_bean} obj, String gelibiaoshi) {
+        return BaseService.isErrorGelibiaoshiOne(obj, GE_LI_BIAO_SHI, gelibiaoshi);
+    }
+
 #end
 #if($MyFileOne!=''||$MyImgOne!='')
 //---------------------------------------文件图片管理---------------------------------------

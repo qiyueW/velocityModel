@@ -4,6 +4,9 @@
 #set($MyStyleName='')##单据状态名
 #set($MyStyle_getMethod='')##单据状态-get方法
 #set($MyStyle_setMethod='')##单据状态-set方法
+#set($MyIsolationName='')##隔离标识
+#set($MyIsolation_getMethod='')##隔离标识-get方法
+#set($MyIsolation_setMethod='')##隔离标识-set方法
 #set($MyPXName='')##排序
 #set($MyPX_getMethod='')##排序-get方法
 #set($MyPX_setMethod='')##排序-set方法
@@ -29,6 +32,10 @@
 #set($MyStyleName="${field.c_name}")
 #set($MyStyle_getMethod="${field.c_method_get}")
 #set($MyStyle_setMethod="${field.c_method_set}")
+#elseif(${field.style}=='isolation')##是否启用隔离标识
+#set($MyIsolationName="${field.c_name}")
+#set($MyIsolation_getMethod="${field.c_method_get}")
+#set($MyIsolation_setMethod="${field.c_method_set}")
 #elseif(${field.style}=='px')##是否启用排序
 #set($MyPXName="${field.c_name}")
 #set($MyPX_getMethod="${field.c_method_get}")
@@ -67,10 +74,14 @@ import ${bean1.package_bean}.${bean1.name_bean};
  * @author wangchunzi
  */
 final public class ${bean.name_service} {
+#if($MyStyleName!='')
     private static final String TABLE1 = "${bean.name_bean}";
     private static final String PK1 = "${myid}";
     private static final String STYLE1 = "${MyStyleName}";
-    
+#end
+#if($MyIsolationName!='')
+    private static final String GE_LI_BIAO_SHI = "${MyIsolationName}";
+#end
 //---------------------------------------查询---------------------------------------
     /**
      * 检出一条记录(表头)
@@ -274,6 +285,15 @@ final public class ${bean.name_service} {
 #end
 #end
 #end
+#if($MyIsolationName!='')
+#if($MyRejectStr!='')
+#set($MyRejectStrValue="隔离标识,$MyRejectStrValue")
+#set($MyRejectStr="$MyIsolationName,$MyRejectStr")
+#else
+#set($MyRejectStrValue="隔离标识")
+#set($MyRejectStr="$MyIsolationName")
+#end
+#end
         int[] i = DBO.service.ADUS.executeBatch(
 #if($MyStyleName!=''||$MyRejectStr!='')
                 //${MyStyleName}#if($MyStyleName!=''&&$MyRejectStr!=''),#end${MyRejectStrValue}
@@ -334,6 +354,25 @@ final public class ${bean.name_service} {
     public static MsgVO updateStyle_unVoid(String ids) {
         return BaseService.updateStyle_unVoid(ids, TABLE1, PK1, STYLE1);
     }
+
+#end
+#if($MyIsolationName!='')
+//---------------------------------------隔离标识管理--------------------------------------
+    public static boolean isErrorGelibiaoshiVast(String ids, String gelibiaoshi) {
+        List<${bean.name_bean}> list = DBO.service.S.selectByCondition(${bean.name_bean}.class, "WHERE ${myid} IN(" + configuration.Tool.replaceDToDDD(ids) + ")");
+        return BaseService.isErrorGelibiaoshiVast(list,GE_LI_BIAO_SHI, gelibiaoshi);
+    }
+    public static boolean isErrorGelibiaoshiVast(List<${bean.name_bean}> list, String gelibiaoshi) {
+        return BaseService.isErrorGelibiaoshiVast(list,GE_LI_BIAO_SHI, gelibiaoshi);
+    }
+    public static boolean isErrorGelibiaoshiOne(String id, String gelibiaoshi) {
+        ${bean.name_bean} obj = DBO.service.S.selectOneByID(${bean.name_bean}.class, id);
+        return BaseService.isErrorGelibiaoshiOne(obj,GE_LI_BIAO_SHI, gelibiaoshi);
+    }
+    public static boolean isErrorGelibiaoshiOne(${bean.name_bean} obj, String gelibiaoshi) {
+        return BaseService.isErrorGelibiaoshiOne(obj,GE_LI_BIAO_SHI, gelibiaoshi);
+    }
+
 #end
 #if($MyFileOne!=''||$MyImgOne!='')
 //---------------------------------------文件图片管理---------------------------------------
