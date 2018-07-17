@@ -140,7 +140,7 @@
         <div id="showSeeOnePage" class="easyui-window" style="overflow: hidden" fit="true"
              data-options="closable:false,closed:true,modal:true,maximized:true">
         </div>
-        <div id="showConditionDiv" class="easyui-window" style="overflow: hidden" fit="true" 
+        <div id="showConditionPage" class="easyui-window" style="overflow: hidden" fit="true" 
              data-options="closable:false,closed:true,modal:true,maximized:true">
         </div>
         <div id="gridShowIMG"></div>

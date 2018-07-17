@@ -176,7 +176,7 @@ function f_closeCondition() {
 }
 function f_queryByCondition(jsonData) {
     $('#showConditionPage').panel('close');
-    var queryParams = $('#dg').treegrid('options').queryParams;
+    var queryParams = $('#dg').datagrid('options').queryParams;
     queryParams.key =jsonData;
-    $('#dg').treegrid('reload');
+    $('#dg').datagrid('reload');
 }
