@@ -4,6 +4,9 @@
 #set($MyStyleName='')##单据状态名
 #set($MyStyle_getMethod='')##单据状态-get方法
 #set($MyStyle_setMethod='')##单据状态-set方法
+#set($MyIsolationName='')##隔离标识
+#set($MyIsolation_getMethod='')##隔离标识-get方法
+#set($MyIsolation_setMethod='')##隔离标识-set方法
 #set($MyPXName='')##排序
 #set($MyPX_getMethod='')##排序-get方法
 #set($MyPX_setMethod='')##排序-set方法
@@ -26,6 +29,10 @@
 #set($MyStyleName="${field.c_name}")
 #set($MyStyle_getMethod="${field.c_method_get}")
 #set($MyStyle_setMethod="${field.c_method_set}")
+#elseif(${field.style}=='isolation')##是否启用隔离标识
+#set($MyIsolationName="${field.c_name}")
+#set($MyIsolation_getMethod="${field.c_method_get}")
+#set($MyIsolation_setMethod="${field.c_method_set}")
 #elseif(${field.style}=='px')##是否启用排序
 #set($MyPXName="${field.c_name}")
 #set($MyPX_getMethod="${field.c_method_get}")

@@ -8,6 +8,9 @@
 #set($Myid='')
 #set($Myid_getMethod='')
 #set($Myid_setMethod='')
+#set($MyIsolationName='')##隔离标识
+#set($MyIsolation_getMethod='')##隔离标识-get方法
+#set($MyIsolation_setMethod='')##隔离标识-set方法
 #foreach($field in ${fields})
 #if(${field.t_index}=='PRIMARY KEY')
 #set($Myid="${field.c_name}")##找到树的主键
@@ -15,6 +18,10 @@
 #set($Myid_setMethod="${field.c_method_set}")
 #elseif(${field.style}=='true')##是否启用了单据状态
 #set($MyStyle='true')##是
+#elseif(${field.style}=='isolation')##是否启用隔离标识
+#set($MyIsolationName="${field.c_name}")
+#set($MyIsolation_getMethod="${field.c_method_get}")
+#set($MyIsolation_setMethod="${field.c_method_set}")
 #end
 #end
 
@@ -24,11 +31,9 @@
 <html>
     <head>
         <title>维护${bean.bean_bz}</title>
-        <script type="text/javascript" src="${NyJSFilePath_List}"></script>
         <%@include file="/WEB-INF/jspf/easyuiLocal.jspf"%>
-        <%@include file="/WEB-INF/jspf/artDialog.jspf"%>
         <%@include file="/WEB-INF/jspf/ztree.jspf"%>
-        <%@include file="/WEB-INF/jspf/GG.jspf"%>
+        <script type="text/javascript" src="${NyJSFilePath_List}"></script>
         <script>
             $D(function (){
 #foreach($field in $fields)
