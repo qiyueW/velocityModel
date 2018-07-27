@@ -61,7 +61,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>添加部门管理</title>
+        <title>${bean.bean_bz}-维护</title>
         <%@include file="/WEB-INF/jspf/easyuiLocal.jspf"%>
         <%@include file="/WEB-INF/jspf/ztree.jspf"%>
         <script type="text/javascript" src="${NyJSFilePath_Edit}"></script>

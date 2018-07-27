@@ -122,8 +122,7 @@
             </div>
 #if($MyStyle=='true')
             <div>
-                <select onchange="$('#dg').datagrid({singleSelect: (this.value == 0)});
-                        pageCN('dg', 100)">
+                <select onchange="$('#dg').datagrid({singleSelect: (this.value == 0)});">
                     <option value="0">单行选择</option>
                     <option value="1">多行选择</option>
                 </select>

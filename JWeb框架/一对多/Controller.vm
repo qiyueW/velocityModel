@@ -113,7 +113,7 @@ public class ${bean.name_hm} {
         this.jw = jw;
     }
 //===================添加操作=============================    
-    $mytestDEV@system.web.power.ann.SQ("${bean.power_add}")
+    @system.web.power.ann.SQ("${bean.power_add}")
     @M("${bean.request_url_add}")
     @Validate({${bean.package_validate}.${bean.name_validate}.class,${bean1.package_validate}.${bean1.name_validate}.class})
     public void add() {
@@ -122,7 +122,7 @@ public class ${bean.name_hm} {
         jw.printOne(${bean.name_service}.addOne(obj, obj2));        
     }
 //===================删除操作=============================    
-    $mytestDEV@system.web.power.ann.SQ("${bean.power_dell}")
+    @system.web.power.ann.SQ("${bean.power_dell}")
     @M("${bean.request_url_dell}")
     public void dellVast() {
         String id = jw.getString("id");
@@ -137,7 +137,7 @@ public class ${bean.name_hm} {
         jw.printOne(${bean.name_service}.dellVast(id));
     }
 //===================修改操作=============================    
-    $mytestDEV@system.web.power.ann.SQ("${bean.power_update}")
+    @system.web.power.ann.SQ("${bean.power_update}")
     @M("${bean.request_url_update}")
     @Validate({${bean.package_validate}.${bean.name_validate}.class,${bean1.package_validate}.${bean1.name_validate}.class})
 	public void update() {
@@ -156,7 +156,7 @@ public class ${bean.name_hm} {
         }
         jw.printOne(${bean.name_service}.update(obj,obj2));
 	}
-    $mytestDEV@system.web.power.ann.SQ("${bean.power_update}")
+    @system.web.power.ann.SQ("${bean.power_update}")
     @M("${bean.request_url_update}/select")
 	public void updateSelect() {
 		String id = jw.getString("id");
@@ -174,7 +174,7 @@ public class ${bean.name_hm} {
 //===================查询操作=============================
     //=========表头查询操作===========
 
-   $mytestDEV@system.web.power.ann.SQ("${bean.power_select}") 
+    @system.web.power.ann.SQ("${bean.power_select}") 
     @M("${bean.request_url_select}/selectOne")//针对表头的查询-一条记录的明细
 	public void selectOne() {
 		String id = jw.getString("id");
@@ -190,14 +190,14 @@ public class ${bean.name_hm} {
 		jw.forward("/${bean.path_userpage_admin}/one.jsp");
 	}
 
-   $mytestDEV@system.web.power.ann.SQ("${bean.power_select}")
+    @system.web.power.ann.SQ("${bean.power_select}")
     @M("${bean.request_url_select}/json")//针对表头的查询-返回json数据
     public static void selectJSON(JWeb jw) {
         String condition = wx.xt.service.XTTiaojianService.openConditionByReturnWhere_key(jw#if($MyIsolationName!=''), "${MyIsolationName}", Gelibiaoshi.getGelibiaoshi(jw)#end);
         Page page = EasyuiService.getPageAndOrderby(jw);
         jw.printOne(Tool.entityToJSON(${bean.name_service}.select(page.getPage(), page.getRows(), condition, page.getOrderBy())));
     }
-   $mytestDEV@system.web.power.ann.SQ("${bean.power_select}")
+    @system.web.power.ann.SQ("${bean.power_select}")
     @M("${bean.request_url_select}/grid")//针对表头的查询-返回Grid数据
     public static void selectGrid(JWeb jw) {
         String condition = wx.xt.service.XTTiaojianService.openConditionByReturnWhere_key(jw#if($MyIsolationName!=''), "${MyIsolationName}", Gelibiaoshi.getGelibiaoshi(jw)#end);
@@ -209,8 +209,8 @@ public class ${bean.name_hm} {
     }
 
     //=========表体查询操作===========
-
-  @M("${bean.request_url_select}/selectOne/body")//针对表体的查询-一条记录的明细
+    @system.web.power.ann.SQ("${bean.power_select}")
+    @M("${bean.request_url_select}/selectOne/body")//针对表体的查询-一条记录的明细
     public void selectOneBody() {
         String id = jw.getString("id");
         ${bean1.name_bean} obj = ${bean.name_service}.selectOne2(id);
@@ -220,7 +220,7 @@ public class ${bean.name_hm} {
         }
         jw.printOne(obj);
     }
-    $mytestDEV@system.web.power.ann.SQ("${bean.power_update}")
+    @system.web.power.ann.SQ("${bean.power_select}")
     @M("${bean.request_url_select}/selectOne/bodyJSON")
 	public void selectOneBodyJSON() {//针对表体的查询
 		String id = jw.getString("pid");
@@ -234,7 +234,7 @@ public class ${bean.name_hm} {
 #end
 		jw.printOne(Tool.entityToJSON(${bean.name_service}.select2(id)));
 	}    
-    $mytestDEV@system.web.power.ann.SQ("${bean.power_update}")
+    @system.web.power.ann.SQ("${bean.power_select}")
     @M("${bean.request_url_select}/selectOne/bodyGrid")
 	public void selectOneBodyGrid() {//针对表体的查询
 		String id = jw.getString("pid");
@@ -251,6 +251,7 @@ public class ${bean.name_hm} {
     
 #if($MyStyleName!='')##表示启用了单据状态管理
 //---------------------------------------单据状态管理---------------------------------------
+    @system.web.power.ann.SQ("${bean.power_examine}")
     @M("${bean.request_url_update}/examine")//审核单据
     public void examine() {
         String ids = jw.getString("ids");
@@ -261,7 +262,7 @@ public class ${bean.name_hm} {
 #end
         jw.printOne(${bean.name_service}.updateStyle_examine(ids));
     }
-
+    @system.web.power.ann.SQ("${bean.power_unexamine}")
     @M("${bean.request_url_update}/unexamine")//反审核
     public void unexamine() {
         String ids = jw.getString("ids");
@@ -272,7 +273,7 @@ public class ${bean.name_hm} {
 #end
         jw.printOne(${bean.name_service}.updateStyle_unExamine(ids));
     }
-
+    @system.web.power.ann.SQ("${bean.power_void}")
     @M("${bean.request_url_update}/void")//作废
     public void tovoid() {
         String ids = jw.getString("ids");
@@ -283,7 +284,7 @@ public class ${bean.name_hm} {
 #end
         jw.printOne(${bean.name_service}.updateStyle_void(ids));
     }
-
+    @system.web.power.ann.SQ("${bean.power_unvoid}")
     @M("${bean.request_url_update}/unvoid")//反作废
     public void untovoid() {
         String ids = jw.getString("ids");
